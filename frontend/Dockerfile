@@ -1,5 +1,5 @@
 # Multi-stage build for frontend
-FROM node:18-alpine as build
+FROM node:20-alpine as build
 
 # Set working directory
 WORKDIR /app
@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies (skip puppeteer for ARM64)
+RUN PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm ci
 
 # Copy source code
 COPY . .
