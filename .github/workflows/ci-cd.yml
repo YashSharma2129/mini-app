@@ -23,7 +23,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME_BACKEND: ${{ github.repository }}-backend
   IMAGE_NAME_FRONTEND: ${{ github.repository }}-frontend
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
 
