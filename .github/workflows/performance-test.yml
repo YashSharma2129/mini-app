@@ -145,16 +145,16 @@ jobs:
         npm install -g artillery
         case "${{ github.event.inputs.load_type || 'normal' }}" in
           "light")
-            artillery run --config backend/artillery-light.yml backend/load-tests.yml --output artillery-report.json
+            artillery run backend/artillery-light.yml --output artillery-report.json
             ;;
           "normal")
-            artillery run --config backend/artillery.yml backend/load-tests.yml --output artillery-report.json
+            artillery run backend/artillery.yml --output artillery-report.json
             ;;
           "heavy")
-            artillery run --config backend/artillery-heavy.yml backend/load-tests.yml --output artillery-report.json
+            artillery run backend/artillery-heavy.yml --output artillery-report.json
             ;;
           "stress")
-            artillery run --config backend/artillery-stress.yml backend/load-tests.yml --output artillery-report.json
+            artillery run backend/artillery-stress.yml --output artillery-report.json
             ;;
         esac
         
@@ -221,7 +221,7 @@ jobs:
     - name: 🧠 Run memory stress test
       run: |
         npm install -g artillery
-        artillery run --config backend/artillery-memory.yml backend/memory-tests.yml
+        artillery run backend/artillery-memory.yml
 
     - name: 📊 Generate memory report
       run: |

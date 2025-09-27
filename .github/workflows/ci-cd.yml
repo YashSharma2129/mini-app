@@ -335,7 +335,7 @@ jobs:
     - name: ⚡ Run Load Tests
       run: |
         npm install -g artillery
-        artillery run --config backend/artillery.yml backend/load-tests.yml
+        artillery run backend/artillery.yml
 
     - name: 📊 Upload Performance Reports
       uses: actions/upload-artifact@v4
