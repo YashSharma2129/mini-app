@@ -82,7 +82,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: eslint-reports
+        name: eslint-reports-${{ github.run_id }}
         path: |
           backend/eslint-report.json
           frontend/eslint-report.json
@@ -158,7 +158,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: security-reports
+        name: security-reports-${{ github.run_id }}
         path: |
           audit-backend.json
           audit-frontend.json
@@ -275,7 +275,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: coverage-reports-${{ matrix.test-type }}
+        name: coverage-reports-${{ matrix.test-type }}-${{ github.run_id }}
         path: |
           backend/coverage/
           frontend/coverage/
@@ -341,7 +341,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: performance-reports
+        name: performance-reports-${{ github.run_id }}
         path: |
           artillery-report.json
           lighthouse-report.json
@@ -383,7 +383,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: accessibility-reports
+        name: accessibility-reports-${{ github.run_id }}
         path: accessibility-report.json
 
   # ==========================================

@@ -73,7 +73,7 @@ jobs:
     - name: 📊 Upload Lighthouse Reports
       uses: actions/upload-artifact@v4
       with:
-        name: lighthouse-reports
+        name: lighthouse-reports-${{ github.run_id }}
         path: |
           .lighthouseci/
           lighthouse-report.json
@@ -165,7 +165,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: artillery-reports-${{ github.event.inputs.load_type || 'normal' }}
+        name: artillery-reports-${{ github.event.inputs.load_type || 'normal' }}-${{ github.run_id }}
         path: |
           artillery-report.json
           artillery-results.html
@@ -240,7 +240,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: memory-reports
+        name: memory-reports-${{ github.run_id }}
         path: |
           memory-report.txt
           memory-*.heapsnapshot
