@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { authAPI } from '../utils/api';
 import { getToken, getUser, setAuthData, clearAuthData, isAuthenticated } from '../utils/auth';
-import { toast } from '../hooks/use-toast';
+import { toast } from 'sonner';
 
 const AuthContext = createContext();
 
@@ -89,19 +89,12 @@ export const AuthProvider = ({ children }) => {
         payload: { user, token },
       });
 
-      toast({
-        title: "Login Successful",
-        description: "Login successful!",
-      });
+      toast.success("Login successful!");
       return { success: true };
     } catch (error) {
       dispatch({ type: 'SET_LOADING', payload: false });
       const message = error.response?.data?.message || 'Login failed';
-      toast({
-        title: "Login Failed",
-        description: message,
-        variant: "destructive",
-      });
+      toast.error(message);
       return { success: false, error: message };
     }
   };
@@ -118,19 +111,12 @@ export const AuthProvider = ({ children }) => {
         payload: { user, token },
       });
 
-      toast({
-        title: "Registration Successful",
-        description: "Registration successful!",
-      });
+      toast.success("Registration successful!");
       return { success: true };
     } catch (error) {
       dispatch({ type: 'SET_LOADING', payload: false });
       const message = error.response?.data?.message || 'Registration failed';
-      toast({
-        title: "Registration Failed",
-        description: message,
-        variant: "destructive",
-      });
+      toast.error(message);
       return { success: false, error: message };
     }
   };
@@ -138,10 +124,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     clearAuthData();
     dispatch({ type: 'LOGOUT' });
-    toast({
-      title: "Logged Out",
-      description: "Logged out successfully",
-    });
+    toast.success("Logged out successfully");
   };
 
   const updateUser = (userData) => {

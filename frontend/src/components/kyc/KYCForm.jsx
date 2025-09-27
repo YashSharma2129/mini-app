@@ -9,7 +9,7 @@ import { Upload, FileText, User, Mail, Phone, MapPin } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Card, CardContent, CardHeader, CardFooter } from '../ui/card';
-import { toast } from '../../hooks/use-toast';
+import { toast } from 'sonner';
 
 const schema = z.object({
   name: z
@@ -48,19 +48,11 @@ const KYCForm = () => {
     const file = event.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "File Size Error",
-          description: "File size must be less than 5MB",
-          variant: "destructive",
-        });
+        toast.error("File size must be less than 5MB");
         return;
       }
       if (!file.type.startsWith('image/')) {
-        toast({
-          title: "Invalid File Type",
-          description: "Please select an image file",
-          variant: "destructive",
-        });
+        toast.error("Please select an image file");
         return;
       }
       setSelectedFile(file);
@@ -69,11 +61,7 @@ const KYCForm = () => {
 
   const onSubmit = async (data) => {
     if (!selectedFile) {
-      toast({
-        title: "Document Required",
-        description: "Please upload an ID document",
-        variant: "destructive",
-      });
+      toast.error("Please upload an ID document");
       return;
     }
 
@@ -88,18 +76,11 @@ const KYCForm = () => {
       formData.append('idImage', selectedFile);
 
       await kycAPI.submitKYC(formData);
-      toast({
-        title: "Success",
-        description: "KYC submitted successfully!",
-      });
+      toast.success("KYC submitted successfully!");
       navigate('/dashboard');
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to submit KYC';
-      toast({
-        title: "Error",
-        description: message,
-        variant: "destructive",
-      });
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

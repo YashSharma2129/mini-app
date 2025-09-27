@@ -8,7 +8,7 @@ import OrderForm from '../components/trading/OrderForm';
 import OrderBook from '../components/trading/OrderBook';
 import PriceAlerts from '../components/trading/PriceAlerts';
 import { productsAPI, ordersAPI } from '../utils/api';
-import { toast } from '../hooks/use-toast';
+import { toast } from 'sonner';
 import { TrendingUp, TrendingDown, DollarSign, Activity } from 'lucide-react';
 
 

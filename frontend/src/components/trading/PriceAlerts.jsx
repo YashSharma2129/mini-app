@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Badge } from '../ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import api from '../../utils/api';
-import { toast } from '../../hooks/use-toast';
+import { toast } from 'sonner';
 import { Plus, Bell, Trash2, Edit } from 'lucide-react';
 
 const alertSchema = z.object({
@@ -56,7 +56,7 @@ const PriceAlerts = ({ products }) => {
       const response = await api.get('/alerts');
       setAlerts(response.data.data);
     } catch (error) {
-      console.error('Failed to fetch alerts:', error);
+      // Error handled by UI state
     } finally {
       setIsLoading(false);
     }
@@ -72,21 +72,14 @@ const PriceAlerts = ({ products }) => {
 
       await api.post('/alerts', alertData);
       
-      toast({
-        title: "Success",
-        description: "Price alert has been created successfully",
-      });
+      toast.success("Price alert has been created successfully");
 
       fetchAlerts();
       setIsDialogOpen(false);
       reset();
 
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error.response?.data?.message || "Failed to create alert",
-        variant: "destructive",
-      });
+      toast.error(error.response?.data?.message || "Failed to create alert");
     }
   };
 
@@ -99,18 +92,11 @@ const PriceAlerts = ({ products }) => {
     try {
       await api.delete(`/alerts/${alertId}`);
       
-      toast({
-        title: "Success",
-        description: "Price alert has been deleted successfully",
-      });
+      toast.success("Price alert has been deleted successfully");
 
       fetchAlerts();
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error.response?.data?.message || "Failed to delete alert",
-        variant: "destructive",
-      });
+      toast.error(error.response?.data?.message || "Failed to delete alert");
     }
   };
 

@@ -38,13 +38,11 @@ const Dashboard = () => {
       setPortfolioSummary(summaryResponse.data.data);
       setPortfolio(portfolioResponse.data.data.portfolio);
     } catch (error) {
-      // Error handled by UI state
     } finally {
       setLoading(false);
     }
   };
 
-  // Mock chart data
   const portfolioChartData = [
     { name: 'Jan', value: 85000 },
     { name: 'Feb', value: 92000 },

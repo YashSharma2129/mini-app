@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import api from '../../utils/api';
-import { toast } from '../../hooks/use-toast';
+import { toast } from 'sonner';
 import { X, Clock, CheckCircle, XCircle } from 'lucide-react';
 
 const OrderBook = ({ userId }) => {
@@ -28,17 +28,10 @@ const OrderBook = ({ userId }) => {
   const handleCancelOrder = async (orderId) => {
     try {
       await api.delete(`/orders/${orderId}`);
-      toast({
-        title: "Success",
-        description: "Order has been cancelled successfully",
-      });
+      toast.success("Order has been cancelled successfully");
       fetchOrders(); // Refresh orders
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error.response?.data?.message || "Failed to cancel order",
-        variant: "destructive",
-      });
+      toast.error(error.response?.data?.message || "Failed to cancel order");
     }
   };
 

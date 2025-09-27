@@ -14,7 +14,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
-import { toast } from '../hooks/use-toast';
+import { toast } from 'sonner';
 
 const Admin = () => {
   const { user } = useAuth();
@@ -25,11 +25,7 @@ const Admin = () => {
 
   useEffect(() => {
     if (user?.role !== 'admin') {
-      toast({
-        title: 'Access Denied',
-        description: 'Admin privileges required.',
-        variant: 'destructive',
-      });
+      toast.error('Admin privileges required.');
       return;
     }
     fetchAdminData();
@@ -48,11 +44,7 @@ const Admin = () => {
       setTopProducts(statsResponse.data.data.top_products);
     } catch (error) {
       // Error handled by UI state
-      toast({
-        title: 'Error',
-        description: 'Failed to load admin data',
-        variant: 'destructive',
-      });
+      toast.error('Failed to load admin data');
     } finally {
       setLoading(false);
     }
@@ -64,25 +56,15 @@ const Admin = () => {
         const amount = prompt('Enter amount to add to wallet:');
         if (amount && !isNaN(amount)) {
           await api.put(`/admin/users/${userId}/wallet`, { amount: parseFloat(amount) });
-          toast({
-            title: 'Success',
-            description: `Wallet updated for user ${userId}`,
-          });
+          toast.success(`Wallet updated for user ${userId}`);
           fetchAdminData(); // Refresh data
         }
       } else {
-        toast({
-          title: 'Info',
-          description: `Action ${action} not implemented yet`,
-        });
+        toast.info(`Action ${action} not implemented yet`);
       }
     } catch (error) {
       // Error handled by toast notification
-      toast({
-        title: 'Error',
-        description: 'Failed to perform user action',
-        variant: 'destructive',
-      });
+      toast.error('Failed to perform user action');
     }
   };
 

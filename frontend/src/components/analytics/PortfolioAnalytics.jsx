@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
 import { analyticsAPI } from '../../utils/api';
-import { toast } from '../../hooks/use-toast';
+import { toast } from 'sonner';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -28,11 +28,7 @@ const PortfolioAnalytics = () => {
       const response = await analyticsAPI.getPortfolioAnalytics();
       setAnalytics(response.data.data);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch portfolio analytics",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch portfolio analytics");
     } finally {
       setIsLoading(false);
     }

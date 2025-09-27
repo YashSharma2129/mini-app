@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useWebSocketContext } from '../context/WebSocketContext';
-import { toast } from './use-toast';
+import { toast } from 'sonner';
 import usePWA from './usePWA';
 
 const useNotifications = () => {
@@ -45,10 +45,8 @@ const useNotifications = () => {
     setUnreadCount(prev => prev + 1);
 
     // Show toast notification
-    toast({
-      title: notification.title,
-      description: notification.message,
-      variant: notification.type === 'error' ? 'destructive' : 'default',
+    toast(notification.message, {
+      description: notification.title
     });
 
     // Show browser notification if permission granted

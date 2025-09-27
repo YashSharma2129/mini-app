@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { exportToCSV, exportToExcel, exportPortfolioToPDF, exportTransactionsToPDF, exportChartToPDF } from '../utils/export';
-import { toast } from '../hooks/use-toast';
+import { toast } from 'sonner';
 
 const ExportButton = ({ 
   data, 
@@ -49,17 +49,10 @@ const ExportButton = ({
           exportToCSV(data, `${filename}.csv`);
       }
       
-      toast({
-        title: "Export Successful",
-        description: `Data exported as ${exportType.toUpperCase()} successfully`,
-      });
+      toast.success(`Data exported as ${exportType.toUpperCase()} successfully`);
     } catch (error) {
-      console.error('Export error:', error);
-      toast({
-        title: "Export Failed",
-        description: "Failed to export data. Please try again.",
-        variant: "destructive",
-      });
+      // Error handled by toast notification
+      toast.error("Failed to export data. Please try again.");
     } finally {
       setIsExporting(false);
     }

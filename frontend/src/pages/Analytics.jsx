@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Badge } from '../components/ui/badge';
 import { analyticsAPI } from '../utils/api';
-import { toast } from '../hooks/use-toast';
+import { toast } from 'sonner';
 import PortfolioAnalytics from '../components/analytics/PortfolioAnalytics';
 import { 
   TrendingUp, 
@@ -38,11 +38,7 @@ const Analytics = () => {
       setTradingAnalytics(tradingResponse.data.data);
       setRiskAnalysis(riskResponse.data.data);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch analytics data",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch analytics data");
     } finally {
       setIsLoading(false);
     }

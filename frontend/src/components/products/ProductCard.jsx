@@ -14,7 +14,7 @@ import {
 import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { toast } from '../../hooks/use-toast';
+import { toast } from 'sonner';
 
 const ProductCard = ({ product, onWatchlistUpdate }) => {
   const { isAuthenticated } = useAuth();
@@ -26,11 +26,7 @@ const ProductCard = ({ product, onWatchlistUpdate }) => {
     e.stopPropagation();
     
     if (!isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please login to add to watchlist",
-        variant: "destructive",
-      });
+      toast.error("Please login to add to watchlist");
       return;
     }
 
@@ -39,17 +35,11 @@ const ProductCard = ({ product, onWatchlistUpdate }) => {
       if (isWatched) {
         await portfolioAPI.removeFromWatchlist(product.id);
         setIsWatched(false);
-        toast({
-          title: "Success",
-          description: "Product removed from watchlist",
-        });
+        toast.success("Product removed from watchlist");
       } else {
         await portfolioAPI.addToWatchlist(product.id);
         setIsWatched(true);
-        toast({
-          title: "Success",
-          description: "Product added to watchlist",
-        });
+        toast.success("Product added to watchlist");
       }
       
       if (onWatchlistUpdate) {
@@ -57,11 +47,7 @@ const ProductCard = ({ product, onWatchlistUpdate }) => {
       }
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to update watchlist';
-      toast({
-        title: "Error",
-        description: message,
-        variant: "destructive",
-      });
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +65,6 @@ const ProductCard = ({ product, onWatchlistUpdate }) => {
   };
 
   const getPriceChange = () => {
-    // Mock price change for demo
     const change = (Math.random() - 0.5) * 10;
     return {
       amount: change,
@@ -93,7 +78,6 @@ const ProductCard = ({ product, onWatchlistUpdate }) => {
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-0 shadow-md">
       <CardContent className="p-6">
-        {/* Header with category and watchlist */}
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-2">
             <Badge variant={getCategoryColor(product.category)} className="text-xs">
@@ -120,7 +104,6 @@ const ProductCard = ({ product, onWatchlistUpdate }) => {
           </button>
         </div>
 
-        {/* Product name and description */}
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2">
             {product.name}
@@ -132,7 +115,6 @@ const ProductCard = ({ product, onWatchlistUpdate }) => {
           )}
         </div>
 
-        {/* Price and change */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-2xl font-bold text-foreground">
@@ -153,7 +135,6 @@ const ProductCard = ({ product, onWatchlistUpdate }) => {
           </div>
         </div>
 
-        {/* Market data */}
         <div className="space-y-1 mb-4">
           {product.market_cap && (
             <div className="text-sm text-muted-foreground">
@@ -167,7 +148,6 @@ const ProductCard = ({ product, onWatchlistUpdate }) => {
           )}
         </div>
 
-        {/* Rating and actions */}
         <div className="flex items-center justify-between pt-3 border-t border-border">
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4 text-yellow-400 fill-current" />

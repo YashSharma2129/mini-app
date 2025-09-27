@@ -7,7 +7,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { toast } from '../../hooks/use-toast';
+import { toast } from 'sonner';
 import api from '../../utils/api';
 
 const schema = z.object({
@@ -60,21 +60,14 @@ const OrderForm = ({ product, onOrderSuccess, onClose }) => {
 
       const response = await api.post('/orders', orderData);
 
-      toast({
-        title: "Success",
-        description: `${data.orderType === 'buy' ? 'Buy' : 'Sell'} order for ${data.quantity} units created successfully`,
-      });
+      toast.success(`${data.orderType === 'buy' ? 'Buy' : 'Sell'} order for ${data.quantity} units created successfully`);
 
       onOrderSuccess && onOrderSuccess(response.data.data);
       onClose && onClose();
       reset();
 
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error.response?.data?.message || "Failed to create order",
-        variant: "destructive",
-      });
+      toast.error(error.response?.data?.message || "Failed to create order");
     } finally {
       setIsLoading(false);
     }

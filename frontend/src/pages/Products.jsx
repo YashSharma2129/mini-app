@@ -81,7 +81,6 @@ const Products = () => {
   };
 
   const handleWatchlistUpdate = () => {
-    // Refresh products to update watchlist status
     fetchProducts();
   };
 

@@ -41,12 +41,12 @@ const usePWA = () => {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
           if (import.meta.env.DEV) {
-            console.log('SW registered: ', registration);
+            // Service worker registered successfully
           }
         })
         .catch((registrationError) => {
           if (import.meta.env.DEV) {
-            console.log('SW registration failed: ', registrationError);
+            // Service worker registration failed
           }
         });
     }

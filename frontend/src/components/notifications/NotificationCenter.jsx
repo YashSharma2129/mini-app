@@ -4,7 +4,7 @@ import { Badge } from '../ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '../ui/dropdown-menu';
 import api from '../../utils/api';
-import { toast } from '../../hooks/use-toast';
+import { toast } from 'sonner';
 import useNotifications from '../../hooks/useNotifications';
 import { 
   Bell, 
@@ -37,49 +37,30 @@ const NotificationCenter = () => {
 
   const handleMarkAsRead = (notificationId) => {
     markAsRead(notificationId);
-    toast({
-      title: "Success",
-      description: "Notification marked as read",
-    });
+    toast.success("Notification marked as read");
   };
 
   const handleMarkAllAsRead = () => {
     markAllAsRead();
-    toast({
-      title: "Success",
-      description: "All notifications have been marked as read",
-    });
+    toast.success("All notifications have been marked as read");
   };
 
   const handleDeleteNotification = (notificationId) => {
     deleteNotification(notificationId);
-    toast({
-      title: "Success",
-      description: "Notification has been deleted",
-    });
+    toast.success("Notification has been deleted");
   };
 
   const handleClearAll = () => {
     clearNotifications();
-    toast({
-      title: "Success",
-      description: "All notifications have been cleared",
-    });
+    toast.success("All notifications have been cleared");
   };
 
   const handleRequestPermission = async () => {
     const granted = await requestNotificationPermission();
     if (granted) {
-      toast({
-        title: "Success",
-        description: "Notification permission granted",
-      });
+      toast.success("Notification permission granted");
     } else {
-      toast({
-        title: "Permission Denied",
-        description: "Notification permission was denied",
-        variant: "destructive",
-      });
+      toast.error("Notification permission was denied");
     }
   };
 

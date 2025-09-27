@@ -18,7 +18,7 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
-import { toast } from '../hooks/use-toast';
+import { toast } from 'sonner';
 import api from '../utils/api';
 
 const Profile = () => {
@@ -58,30 +58,19 @@ const Profile = () => {
       const response = await api.put('/auth/profile', formData);
       if (response.data.success) {
         updateUser(response.data.data.user);
-        toast({
-          title: 'Success',
-          description: 'Profile updated successfully!',
-        });
+        toast.success('Profile updated successfully!');
         setIsEditing(false);
       }
     } catch (error) {
       // Error handled by toast notification
-      toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Failed to update profile',
-        variant: 'destructive',
-      });
+        toast.error(error.response?.data?.message || 'Failed to update profile');
     }
   };
 
   const handlePasswordSave = async () => {
     try {
       if (passwordData.newPassword !== passwordData.confirmPassword) {
-        toast({
-          title: 'Error',
-          description: 'New passwords do not match',
-          variant: 'destructive',
-        });
+        toast.error('New passwords do not match');
         return;
       }
 
@@ -91,10 +80,7 @@ const Profile = () => {
       });
 
       if (response.data.success) {
-        toast({
-          title: 'Success',
-          description: 'Password changed successfully!',
-        });
+        toast.success('Password changed successfully!');
         setPasswordData({
           currentPassword: '',
           newPassword: '',
@@ -104,11 +90,7 @@ const Profile = () => {
       }
     } catch (error) {
       // Error handled by toast notification
-      toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Failed to change password',
-        variant: 'destructive',
-      });
+        toast.error(error.response?.data?.message || 'Failed to change password');
     }
   };
 

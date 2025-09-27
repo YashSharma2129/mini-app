@@ -21,7 +21,7 @@ import { Badge } from '../components/ui/badge';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import BuyProductModal from '../components/products/BuyProductModal';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { toast } from '../hooks/use-toast';
+import { toast } from 'sonner';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -42,12 +42,7 @@ const ProductDetail = () => {
       setProduct(response.data.data.product);
       setIsWatched(response.data.data.product.is_watched || false);
     } catch (error) {
-      // Error handled by UI state
-      toast({
-        title: "Error",
-        description: "Product not found",
-        variant: "destructive",
-      });
+      toast.error("Product not found");
       navigate('/products');
     } finally {
       setLoading(false);
@@ -56,11 +51,7 @@ const ProductDetail = () => {
 
   const handleWatchlistToggle = async () => {
     if (!isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please login to add to watchlist",
-        variant: "destructive",
-      });
+      toast.error("Please login to add to watchlist");
       return;
     }
 
@@ -68,34 +59,22 @@ const ProductDetail = () => {
       if (isWatched) {
         await portfolioAPI.removeFromWatchlist(product.id);
         setIsWatched(false);
-        toast({
-          title: "Success",
-          description: "Product removed from watchlist",
-        });
+        toast.success("Product removed from watchlist");
       } else {
         await portfolioAPI.addToWatchlist(product.id);
         setIsWatched(true);
-        toast({
-          title: "Success",
-          description: "Product added to watchlist",
-        });
+        toast.success("Product added to watchlist");
       }
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to update watchlist';
-      toast({
-        title: "Error",
-        description: message,
-        variant: "destructive",
-      });
+      toast.error(message);
     }
   };
 
   const handleBuySuccess = () => {
-    // Refresh product data or navigate to portfolio
     navigate('/portfolio');
   };
 
-  // Mock chart data
   const chartData = [
     { name: '1M', value: product?.price * 0.95 },
     { name: '2M', value: product?.price * 0.98 },
@@ -107,7 +86,6 @@ const ProductDetail = () => {
   ];
 
   const getPriceChange = () => {
-    // Mock price change
     const change = (Math.random() - 0.5) * 10;
     return {
       amount: change,
@@ -142,7 +120,6 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Back Button */}
         <div className="mb-6">
           <Button
             variant="ghost"
@@ -155,9 +132,7 @@ const ProductDetail = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Enhanced Product Header */}
             <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
@@ -199,7 +174,6 @@ const ProductDetail = () => {
                   </div>
                 </div>
 
-                {/* Price Section */}
                 <div className="border-t border-border pt-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -235,7 +209,6 @@ const ProductDetail = () => {
               </CardContent>
             </Card>
 
-            {/* Enhanced Price Chart */}
             <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
               <CardHeader className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-b border-border">
                 <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">Price History (6 Months)</h3>
@@ -270,7 +243,6 @@ const ProductDetail = () => {
               </CardContent>
             </Card>
 
-            {/* Enhanced Product Details */}
             <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
               <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-b border-border">
                 <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100">Product Details</h3>
@@ -315,10 +287,8 @@ const ProductDetail = () => {
               </CardContent>
             </Card>
           </div>
-
-          {/* Enhanced Sidebar */}
-          <div className="space-y-6">
-            {/* Enhanced Buy Section */}
+                            
+          <div className="space-y-6">   
             <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold mb-4 text-foreground">Buy {product.name}</h3>
@@ -366,7 +336,6 @@ const ProductDetail = () => {
               </CardContent>
             </Card>
 
-            {/* Enhanced Quick Stats */}
             <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
               <CardHeader className="bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 border-b border-border">
                 <h3 className="text-lg font-semibold text-yellow-900 dark:text-yellow-100">Quick Stats</h3>
@@ -393,7 +362,6 @@ const ProductDetail = () => {
               </CardContent>
             </Card>
 
-            {/* Enhanced Risk Disclaimer */}
             <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold mb-4 text-orange-600">Risk Disclaimer</h3>
@@ -406,7 +374,6 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Buy Modal */}
         <BuyProductModal
           product={product}
           user={user}

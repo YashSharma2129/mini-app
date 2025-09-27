@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { toast } from './use-toast';
+import { toast } from 'sonner';
 
 // Simple cache implementation
 const cache = new Map();
@@ -66,10 +66,7 @@ const useApi = (apiCall, options = {}) => {
       }
 
       if (showSuccessToast && successMessage) {
-        toast({
-          title: "Success",
-          description: successMessage,
-        });
+        toast.success(successMessage);
       }
 
       return result;
@@ -88,11 +85,7 @@ const useApi = (apiCall, options = {}) => {
       }
 
       if (showErrorToast) {
-        toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive",
-        });
+        toast.error(errorMessage);
       }
 
       // Retry logic

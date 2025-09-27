@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { toast } from './use-toast';
+import { toast } from 'sonner';
 import { io } from 'socket.io-client';
 
 const useWebSocket = (url, options = {}) => {
@@ -56,37 +56,31 @@ const useWebSocket = (url, options = {}) => {
         // Handle different message types
         switch (data.type) {
           case 'notification':
-            toast({
-              title: data.title || 'Notification',
-              description: data.message,
-              variant: data.variant || 'default',
+            toast(data.message, {
+              description: data.title || 'Notification'
             });
             break;
           case 'price_alert':
-            toast({
-              title: 'Price Alert',
-              description: `${data.product_name} has reached ₹${data.target_price}`,
-              variant: 'default',
+            toast(`${data.product_name} has reached ₹${data.target_price}`, {
+              description: 'Price Alert'
             });
             break;
           case 'order_update':
-            toast({
-              title: 'Order Update',
-              description: `Your ${data.order_type} order for ${data.product_name} has been ${data.status}`,
-              variant: data.status === 'executed' ? 'default' : 'destructive',
+            toast(`Your ${data.order_type} order for ${data.product_name} has been ${data.status}`, {
+              description: 'Order Update'
             });
             break;
           case 'portfolio_update':
             // Portfolio updates don't need toast notifications
             break;
           default:
-            console.log('Unknown message type:', data.type);
+            // Unknown message type received
         }
       });
 
       socket.on('disconnect', (reason) => {
         if (import.meta.env.DEV) {
-          console.log('Socket.IO disconnected:', reason);
+          // Disconnected from WebSocket
         }
         setIsConnected(false);
         setSocket(null);
@@ -97,7 +91,7 @@ const useWebSocket = (url, options = {}) => {
       });
 
       socket.on('connect_error', (error) => {
-        console.error('Socket.IO connection error:', error);
+        // Connection error - handled by UI state
         setIsConnected(false);
         
         if (optionsRef.current.onError) {
@@ -106,7 +100,7 @@ const useWebSocket = (url, options = {}) => {
       });
 
     } catch (error) {
-      console.error('Failed to create Socket.IO connection:', error);
+      // Failed to create WebSocket connection
     }
   }, [isAuthenticated, user, url, maxReconnectAttempts, reconnectInterval]);
 
@@ -127,7 +121,7 @@ const useWebSocket = (url, options = {}) => {
     if (socket && isConnected) {
       socket.emit(event, data);
     } else if (import.meta.env.DEV) {
-      console.warn('Socket.IO is not connected');
+      // WebSocket is not connected
     }
   }, [socket, isConnected]);
 

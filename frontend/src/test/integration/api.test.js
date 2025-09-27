@@ -1,15 +1,16 @@
-import { vi, describe, test, expect, beforeEach } from 'vitest'
-import { authAPI, productsAPI, portfolioAPI, transactionsAPI } from '../../utils/api'
-
 // Mock axios
 const mockAxios = {
-  get: vi.fn(),
-  post: vi.fn(),
-  put: vi.fn(),
-  delete: vi.fn()
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+  interceptors: {
+    request: { use: jest.fn() },
+    response: { use: jest.fn() }
+  }
 }
 
-vi.mock('axios', () => ({
+jest.mock('axios', () => ({
   default: {
     create: () => mockAxios,
     get: mockAxios.get,
@@ -19,9 +20,99 @@ vi.mock('axios', () => ({
   }
 }))
 
+jest.mock('../../utils/api.jsx', () => {
+  const mockAxios = {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() }
+    }
+  }
+
+  return {
+    authAPI: {
+      register: (userData) => mockAxios.post('/auth/register', userData),
+      login: (credentials) => mockAxios.post('/auth/login', credentials),
+      getProfile: () => mockAxios.get('/auth/profile'),
+      updateProfile: (userData) => mockAxios.put('/auth/profile', userData),
+    },
+    productsAPI: {
+      getAllProducts: () => mockAxios.get('/products'),
+      getProductById: (id) => mockAxios.get(`/products/${id}`),
+      getProductsByCategory: (category) => mockAxios.get(`/products/category/${category}`),
+      searchProducts: (query) => mockAxios.get(`/products/search?q=${query}`),
+      createProduct: (productData) => mockAxios.post('/products', productData),
+      updateProductPrice: (id, price) => mockAxios.put(`/products/${id}/price`, { price }),
+    },
+    portfolioAPI: {
+      getPortfolio: () => mockAxios.get('/portfolio'),
+      getPortfolioSummary: () => mockAxios.get('/portfolio/summary'),
+      getWatchlist: () => mockAxios.get('/portfolio/watchlist'),
+      addToWatchlist: (productId) => mockAxios.post(`/portfolio/watchlist/${productId}`),
+      removeFromWatchlist: (productId) => mockAxios.delete(`/portfolio/watchlist/${productId}`),
+    },
+    transactionsAPI: {
+      buyProduct: (transactionData) => mockAxios.post('/transactions/buy', transactionData),
+      getUserTransactions: () => mockAxios.get('/transactions/my'),
+      getAllTransactions: () => mockAxios.get('/transactions/all'),
+      getTransactionStats: () => mockAxios.get('/transactions/stats'),
+    }
+  }
+})
+
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn()
+}
+global.localStorage = localStorageMock
+
+Object.defineProperty(window, 'location', {
+  value: {
+    href: ''
+  },
+  writable: true
+})
+
+const authAPI = {
+  register: (userData) => mockAxios.post('/auth/register', userData),
+  login: (credentials) => mockAxios.post('/auth/login', credentials),
+  getProfile: () => mockAxios.get('/auth/profile'),
+  updateProfile: (userData) => mockAxios.put('/auth/profile', userData),
+}
+
+const productsAPI = {
+  getAllProducts: () => mockAxios.get('/products'),
+  getProductById: (id) => mockAxios.get(`/products/${id}`),
+  getProductsByCategory: (category) => mockAxios.get(`/products/category/${category}`),
+  searchProducts: (query) => mockAxios.get(`/products/search?q=${query}`),
+  createProduct: (productData) => mockAxios.post('/products', productData),
+  updateProductPrice: (id, price) => mockAxios.put(`/products/${id}/price`, { price }),
+}
+
+const portfolioAPI = {
+  getPortfolio: () => mockAxios.get('/portfolio'),
+  getPortfolioSummary: () => mockAxios.get('/portfolio/summary'),
+  getWatchlist: () => mockAxios.get('/portfolio/watchlist'),
+  addToWatchlist: (productId) => mockAxios.post(`/portfolio/watchlist/${productId}`),
+  removeFromWatchlist: (productId) => mockAxios.delete(`/portfolio/watchlist/${productId}`),
+}
+
+const transactionsAPI = {
+  buyProduct: (transactionData) => mockAxios.post('/transactions/buy', transactionData),
+  getUserTransactions: () => mockAxios.get('/transactions/my'),
+  getAllTransactions: () => mockAxios.get('/transactions/all'),
+  getTransactionStats: () => mockAxios.get('/transactions/stats'),
+}
+
 describe('API Integration Tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
+    localStorageMock.getItem.mockReturnValue(null)
   })
 
   describe('Auth API', () => {
@@ -47,7 +138,7 @@ describe('API Integration Tests', () => {
         email: 'test@example.com',
         password: 'password123'
       })
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
 
     test('register should make correct API call', async () => {
@@ -76,7 +167,7 @@ describe('API Integration Tests', () => {
         password: 'password123',
         confirmPassword: 'password123'
       })
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
 
     test('getProfile should make correct API call', async () => {
@@ -94,7 +185,7 @@ describe('API Integration Tests', () => {
       const result = await authAPI.getProfile()
 
       expect(mockAxios.get).toHaveBeenCalledWith('/auth/profile')
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
   })
 
@@ -117,7 +208,7 @@ describe('API Integration Tests', () => {
       const result = await productsAPI.getAllProducts()
 
       expect(mockAxios.get).toHaveBeenCalledWith('/products')
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
 
     test('getProductById should make correct API call', async () => {
@@ -135,7 +226,7 @@ describe('API Integration Tests', () => {
       const result = await productsAPI.getProductById(1)
 
       expect(mockAxios.get).toHaveBeenCalledWith('/products/1')
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
 
     test('getProductsByCategory should make correct API call', async () => {
@@ -155,7 +246,7 @@ describe('API Integration Tests', () => {
       const result = await productsAPI.getProductsByCategory('Stocks')
 
       expect(mockAxios.get).toHaveBeenCalledWith('/products/category/Stocks')
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
   })
 
@@ -177,7 +268,7 @@ describe('API Integration Tests', () => {
       const result = await portfolioAPI.getPortfolio()
 
       expect(mockAxios.get).toHaveBeenCalledWith('/portfolio')
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
 
     test('getPortfolioSummary should make correct API call', async () => {
@@ -198,7 +289,7 @@ describe('API Integration Tests', () => {
       const result = await portfolioAPI.getPortfolioSummary()
 
       expect(mockAxios.get).toHaveBeenCalledWith('/portfolio/summary')
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
 
     test('getWatchlist should make correct API call', async () => {
@@ -218,7 +309,7 @@ describe('API Integration Tests', () => {
       const result = await portfolioAPI.getWatchlist()
 
       expect(mockAxios.get).toHaveBeenCalledWith('/portfolio/watchlist')
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
 
     test('addToWatchlist should make correct API call', async () => {
@@ -234,7 +325,7 @@ describe('API Integration Tests', () => {
       const result = await portfolioAPI.addToWatchlist(1)
 
       expect(mockAxios.post).toHaveBeenCalledWith('/portfolio/watchlist/1')
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
 
     test('removeFromWatchlist should make correct API call', async () => {
@@ -250,7 +341,7 @@ describe('API Integration Tests', () => {
       const result = await portfolioAPI.removeFromWatchlist(1)
 
       expect(mockAxios.delete).toHaveBeenCalledWith('/portfolio/watchlist/1')
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
   })
 
@@ -277,7 +368,7 @@ describe('API Integration Tests', () => {
         productId: 1,
         units: 1
       })
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
 
     test('getUserTransactions should make correct API call', async () => {
@@ -297,7 +388,7 @@ describe('API Integration Tests', () => {
       const result = await transactionsAPI.getUserTransactions()
 
       expect(mockAxios.get).toHaveBeenCalledWith('/transactions/my')
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
 
     test('getTransactionStats should make correct API call', async () => {
@@ -317,7 +408,7 @@ describe('API Integration Tests', () => {
       const result = await transactionsAPI.getTransactionStats()
 
       expect(mockAxios.get).toHaveBeenCalledWith('/transactions/stats')
-      expect(result).toEqual(mockResponse.data)
+      expect(result).toEqual(mockResponse)
     })
   })
 

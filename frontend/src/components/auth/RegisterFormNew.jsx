@@ -45,7 +45,7 @@ const RegisterForm = () => {
         navigate('/dashboard');
       }
     } catch (error) {
-      console.error('Registration error:', error);
+      // Error handled by toast notification
     } finally {
       setIsLoading(false);
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from './components/ui/toaster';
+import { Toaster } from 'sonner';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { WebSocketProvider } from './context/WebSocketContext.jsx';
@@ -87,7 +87,13 @@ const App = () => {
             <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
               <ScrollToTop />
               <div className="App">
-                <Toaster />
+                <Toaster 
+                  position="top-right"
+                  expand={true}
+                  richColors={true}
+                  closeButton={true}
+                  duration={4000}
+                />
                 <PWAInstallPrompt />
                 <OfflineIndicator />
                 

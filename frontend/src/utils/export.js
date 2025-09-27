@@ -7,7 +7,7 @@ import { saveAs } from 'file-saver';
 export const exportToCSV = (data, filename = 'export.csv') => {
   if (!data || !Array.isArray(data) || data.length === 0) {
     if (import.meta.env.DEV) {
-      console.error('No data to export');
+      throw new Error('No data to export');
     }
     return;
   }
@@ -35,7 +35,7 @@ export const exportToCSV = (data, filename = 'export.csv') => {
 export const exportToExcel = (data, filename = 'export.xlsx', sheetName = 'Sheet1') => {
   if (!data || !Array.isArray(data) || data.length === 0) {
     if (import.meta.env.DEV) {
-      console.error('No data to export');
+      throw new Error('No data to export');
     }
     return;
   }
@@ -55,7 +55,7 @@ export const exportChartToPDF = async (elementId, filename = 'chart.pdf', title 
     const element = document.getElementById(elementId);
     if (!element) {
       if (import.meta.env.DEV) {
-        console.error('Element not found for export');
+        throw new Error('Element not found for export');
       }
       return;
     }
@@ -81,7 +81,7 @@ export const exportChartToPDF = async (elementId, filename = 'chart.pdf', title 
     pdf.save(filename);
   } catch (error) {
     if (import.meta.env.DEV) {
-      console.error('Error exporting to PDF:', error);
+      throw error; // Re-throw for proper error handling
     }
   }
 };
@@ -269,7 +269,7 @@ export const exportMultipleChartsToPDF = async (chartElements, filename = 'chart
     pdf.save(filename);
   } catch (error) {
     if (import.meta.env.DEV) {
-      console.error('Error exporting multiple charts to PDF:', error);
+      throw error; // Re-throw for proper error handling
     }
   }
 };

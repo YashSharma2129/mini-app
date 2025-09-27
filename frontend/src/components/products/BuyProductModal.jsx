@@ -8,7 +8,7 @@ import { X, ShoppingCart, Calculator, AlertCircle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Card, CardContent, CardHeader, CardFooter } from '../ui/card';
-import { toast } from '../../hooks/use-toast';
+import { toast } from 'sonner';
 
 const createSchema = (walletBalance, pricePerUnit) => z.object({
   units: z
@@ -49,20 +49,13 @@ const BuyProductModal = ({ product, user, isOpen, onClose, onSuccess }) => {
         units: data.units
       });
 
-      toast({
-        title: "Success",
-        description: "Product purchased successfully!",
-      });
+      toast.success("Product purchased successfully!");
       onSuccess?.(response.data.data);
       onClose();
       reset();
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to purchase product';
-      toast({
-        title: "Error",
-        description: message,
-        variant: "destructive",
-      });
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

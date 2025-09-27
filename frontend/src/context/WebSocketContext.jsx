@@ -26,21 +26,21 @@ export const WebSocketProvider = ({ children }) => {
     {
       onOpen: () => {
         if (import.meta.env.DEV) {
-          console.log('Socket.IO connection established');
+          // Connection established
         }
       },
       onClose: (event) => {
         if (import.meta.env.DEV) {
-          console.log('Socket.IO connection closed:', event.reason);
+          // Connection closed
         }
       },
       onError: (error) => {
-        console.error('Socket.IO error:', error);
+        // WebSocket error - handled by UI state
       },
       onMessage: (data) => {
         // Handle global Socket.IO messages
         if (import.meta.env.DEV) {
-          console.log('Socket.IO message received:', data);
+          // Message received
         }
       }
     }
