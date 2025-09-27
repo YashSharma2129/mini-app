@@ -8,6 +8,7 @@ import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { toast } from '../../hooks/use-toast';
 
 const loginSchema = z.object({

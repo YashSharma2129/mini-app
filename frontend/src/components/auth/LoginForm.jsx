@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Checkbox } from '../ui/checkbox';
 import { toast } from '../../hooks/use-toast';
