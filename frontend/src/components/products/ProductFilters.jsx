@@ -41,27 +41,30 @@ const ProductFilters = ({
         )}
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Search */}
-        <div className="relative flex-1">
-          <Input
-            placeholder="Search products..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10"
-          />
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-muted-foreground" />
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-foreground">
+            Search
+          </label>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
+            <Input
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="pl-10 w-full"
+            />
           </div>
         </div>
 
         {/* Category Filter */}
-        <div className="flex-1">
-          <label className="block text-sm font-medium text-foreground mb-2">
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-foreground">
             Category
           </label>
           <Select value={selectedCategory} onValueChange={onCategoryChange}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
@@ -75,12 +78,12 @@ const ProductFilters = ({
         </div>
 
         {/* Sort */}
-        <div className="flex-1">
-          <label className="block text-sm font-medium text-foreground mb-2">
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-foreground">
             Sort By
           </label>
           <Select value={sortBy} onValueChange={onSortChange}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
