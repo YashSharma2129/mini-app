@@ -99,6 +99,27 @@ mini-app/
 
 ## 🚀 Quick Start
 
+### Option 1: Docker (Recommended)
+
+The easiest way to run the application is using Docker:
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd mini-app
+
+# Start all services with Docker Compose
+docker-compose up -d
+
+# Access the application
+# Frontend: http://localhost:80
+# Backend API: http://localhost:5000
+```
+
+For detailed Docker instructions, see [DOCKER.md](./DOCKER.md)
+
+### Option 2: Local Development
+
 ### Prerequisites
 - Node.js (v18 or higher)
 - PostgreSQL (v12 or higher)
@@ -219,12 +240,40 @@ The demo video showcases:
 
 ## 🚀 Deployment
 
-### Backend Deployment (Render/Railway)
+### Docker Deployment
+
+The application includes comprehensive Docker and Kubernetes configurations:
+
+#### Docker Compose (Production)
+```bash
+docker-compose up -d
+```
+
+#### Kubernetes Deployment
+```bash
+# Deploy to Kubernetes cluster
+cd k8s
+./deploy.sh
+
+# Or manually apply manifests
+kubectl apply -f k8s/
+```
+
+#### CI/CD Pipeline
+The project includes GitHub Actions workflow that:
+- Runs tests automatically
+- Builds Docker images
+- Pushes to GitHub Container Registry
+- Deploys to production
+
+### Traditional Deployment
+
+#### Backend Deployment (Render/Railway)
 1. Connect your GitHub repository
 2. Set environment variables
 3. Deploy with automatic builds
 
-### Frontend Deployment (Vercel/Netlify)
+#### Frontend Deployment (Vercel/Netlify)
 1. Connect your GitHub repository
 2. Set build command: `npm run build`
 3. Set output directory: `dist`
