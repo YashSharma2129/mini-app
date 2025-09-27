@@ -27,7 +27,10 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.NODE_ENV === 'production' 
-      ? process.env.FRONTEND_URL 
+      ? [
+          process.env.FRONTEND_URL,
+          'https://mini-app-frontend-silk.vercel.app'
+        ].filter(Boolean)
       : ['http://localhost:3000', 'http://localhost:3001'],
     credentials: true
   }
@@ -48,7 +51,10 @@ app.use(limiter);
 
 app.use(cors({  
   origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL 
+    ? [
+        process.env.FRONTEND_URL,
+        'https://mini-app-frontend-silk.vercel.app'
+      ].filter(Boolean)
     : ['http://localhost:3000', 'http://localhost:3001'],
   credentials: true
 }));

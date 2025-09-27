@@ -1,0 +1,10 @@
+{
+  "env": {
+    "VITE_API_URL": "https://mini-app-ts9c.onrender.com/api"
+  },
+  "build": {
+    "env": {
+      "VITE_API_URL": "https://mini-app-ts9c.onrender.com/api"
+    }
+  }
+}
