@@ -1,0 +1,26 @@
+config:
+  target: 'http://localhost:5000'
+  phases:
+    - duration: 60
+      arrivalRate: 2
+    - duration: 120
+      arrivalRate: 5
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+  plugins:
+    metrics-by-endpoint:
+      useOnlyRequestNames: true
+
+scenarios:
+  - name: "Light Load Health Check"
+    weight: 50
+    flow:
+      - get:
+          url: "/health"
+
+  - name: "Light Load Products"
+    weight: 50
+    flow:
+      - get:
+          url: "/api/products"

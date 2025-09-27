@@ -1,0 +1,62 @@
+config:
+  target: 'http://localhost:5000'
+  phases:
+    - duration: 60
+      arrivalRate: 5
+    - duration: 120
+      arrivalRate: 10
+    - duration: 60
+      arrivalRate: 15
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+  plugins:
+    metrics-by-endpoint:
+      useOnlyRequestNames: true
+
+scenarios:
+  - name: "Health Check"
+    weight: 20
+    flow:
+      - get:
+          url: "/health"
+
+  - name: "Authentication Flow"
+    weight: 30
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "user@tradingapp.com"
+            password: "password123"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/auth/profile"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+
+  - name: "Product Operations"
+    weight: 25
+    flow:
+      - get:
+          url: "/api/products"
+      - get:
+          url: "/api/products/1"
+
+  - name: "Portfolio Operations"
+    weight: 25
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "user@tradingapp.com"
+            password: "password123"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/portfolio"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
