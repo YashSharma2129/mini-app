@@ -1,6 +1,6 @@
 # TradingApp - Financial Trading Platform
 
-A comprehensive financial trading application built with modern web technologies, featuring user authentication, KYC verification, product trading, and portfolio management.
+A comprehensive financial trading application built with modern web technologies, featuring user authentication, KYC verification, product trading, portfolio management, real-time analytics, and WebSocket integration.
 
 ## 🚀 Features
 
@@ -29,6 +29,8 @@ A comprehensive financial trading application built with modern web technologies
   - Performance metrics
 - **Watchlist** feature (add/remove products)
 - **Transaction History** with detailed records
+- **Order Management** with buy/sell orders
+- **Real-time Portfolio Updates** via WebSocket
 
 ### 🎯 Bonus Features (All Implemented)
 
@@ -39,6 +41,10 @@ A comprehensive financial trading application built with modern web technologies
 - **Modern UI** with shadcn/ui components
 - **Responsive Design** for all devices
 - **Real-time Updates** and notifications
+- **WebSocket Integration** for live data updates
+- **Advanced Analytics** with comprehensive dashboards
+- **PWA Support** for mobile app-like experience
+- **Dark/Light Theme** toggle
 
 #### Security Features
 - **JWT Authentication** with secure token management
@@ -54,6 +60,7 @@ A comprehensive financial trading application built with modern web technologies
 - **PostgreSQL** database with connection pooling
 - **Redis** for caching and session management
 - **JWT** for authentication
+- **Socket.IO** for real-time WebSocket communication
 - **Multer** for file uploads
 - **Bcrypt** for password hashing
 - **Joi** for input validation
@@ -68,8 +75,10 @@ A comprehensive financial trading application built with modern web technologies
 - **React Router** for navigation
 - **React Hook Form** with Zod validation
 - **Recharts** for data visualization
+- **Socket.IO Client** for real-time communication
 - **Axios** for API communication
 - **React Hot Toast** for notifications
+- **PWA** support with service workers
 
 ## 📁 Project Structure
 
@@ -186,8 +195,12 @@ For detailed Docker instructions, see [DOCKER.md](./DOCKER.md)
 - **Password**: password123
 - **Role**: Admin (can view all users and transactions)
 
-### Regular User
-- **Email**: user@tradingapp.com
+### Regular Users
+- **Email**: john@example.com
+- **Password**: password123
+- **Role**: User (standard trading features)
+
+- **Email**: jane@example.com
 - **Password**: password123
 - **Role**: User (standard trading features)
 
@@ -221,6 +234,18 @@ For detailed Docker instructions, see [DOCKER.md](./DOCKER.md)
 - `POST /api/portfolio/watchlist/:id` - Add to watchlist
 - `DELETE /api/portfolio/watchlist/:id` - Remove from watchlist
 
+### Analytics Endpoints
+- `GET /api/analytics/market` - Get market analytics and top performers
+- `GET /api/analytics/trading` - Get user trading analytics
+- `GET /api/analytics/risk` - Get portfolio risk analysis
+- `GET /api/analytics/portfolio` - Get detailed portfolio analytics
+
+### Orders Endpoints
+- `POST /api/orders` - Create new order
+- `GET /api/orders` - Get user orders
+- `GET /api/orders/stats` - Get order statistics
+- `DELETE /api/orders/:id` - Cancel order
+
 ### Admin Endpoints
 - `GET /api/admin/dashboard` - Get dashboard stats
 - `GET /api/admin/users` - Get all users
@@ -237,6 +262,12 @@ The demo video showcases:
 6. **Watchlist Management**
 7. **Admin Dashboard Features**
 8. **Transaction History**
+9. **Advanced Analytics Dashboard**
+10. **Real-time WebSocket Updates**
+11. **Order Management**
+12. **Risk Analysis**
+13. **PWA Installation**
+14. **Dark/Light Theme Toggle**
 
 ## 🚀 Deployment
 
@@ -345,8 +376,10 @@ This project fully satisfies all requirements of the Full-Stack Developer Assign
 ✅ **Transaction & Portfolio** - Complete with virtual wallet and watchlist
 ✅ **Technical Requirements** - Node.js, Express, PostgreSQL, React, JWT
 ✅ **Bonus Features** - Redis caching, Admin dashboard, Role-based access
+✅ **Advanced Features** - WebSocket integration, Analytics dashboard, PWA support
 ✅ **Clean Code** - Well-structured, documented, and maintainable
 ✅ **Working Features** - All functionality tested and working
 ✅ **Demo Video** - Comprehensive 3-5 minute walkthrough
+✅ **Production Ready** - Docker, Kubernetes, CI/CD pipeline
 
-The application is production-ready and demonstrates advanced full-stack development skills with modern best practices.
+The application is production-ready and demonstrates advanced full-stack development skills with modern best practices including real-time communication, advanced analytics, and progressive web app capabilities.

@@ -81,24 +81,24 @@ const BuyProductModal = ({ product, user, isOpen, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-primary-100 rounded-full">
-                <ShoppingCart className="h-6 w-6 text-primary-600" />
+              <div className="p-2 bg-primary/10 rounded-full">
+                <ShoppingCart className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Buy Product</h2>
-                <p className="text-sm text-gray-600">{product?.name}</p>
+                <h2 className="text-xl font-semibold text-foreground">Buy Product</h2>
+                <p className="text-sm text-muted-foreground">{product?.name}</p>
               </div>
             </div>
             <button
               onClick={handleClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 hover:bg-muted rounded-full transition-colors"
             >
-              <X className="h-5 w-5 text-gray-500" />
+              <X className="h-5 w-5 text-muted-foreground" />
             </button>
           </div>
 
@@ -107,17 +107,17 @@ const BuyProductModal = ({ product, user, isOpen, onClose, onSuccess }) => {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Current Price:</span>
-                  <span className="font-semibold">{formatCurrency(product?.price || 0)}</span>
+                  <span className="text-muted-foreground">Current Price:</span>
+                  <span className="font-semibold text-foreground">{formatCurrency(product?.price || 0)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Category:</span>
-                  <span className="font-semibold">{product?.category}</span>
+                  <span className="text-muted-foreground">Category:</span>
+                  <span className="font-semibold text-foreground">{product?.category}</span>
                 </div>
                 {product?.pe_ratio && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">P/E Ratio:</span>
-                    <span className="font-semibold">{product.pe_ratio}</span>
+                    <span className="text-muted-foreground">P/E Ratio:</span>
+                    <span className="font-semibold text-foreground">{product.pe_ratio}</span>
                   </div>
                 )}
               </div>
@@ -125,12 +125,12 @@ const BuyProductModal = ({ product, user, isOpen, onClose, onSuccess }) => {
           </Card>
 
           {/* Wallet Balance */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-6">
             <div className="flex items-center space-x-2">
-              <Calculator className="h-5 w-5 text-blue-600" />
-              <span className="text-sm font-medium text-blue-800">Available Balance</span>
+              <Calculator className="h-5 w-5 text-primary" />
+              <span className="text-sm font-medium text-primary">Available Balance</span>
             </div>
-            <p className="text-2xl font-bold text-blue-900 mt-1">
+            <p className="text-2xl font-bold text-foreground mt-1">
               {formatCurrency(user?.wallet_balance || 0)}
             </p>
           </div>
@@ -138,7 +138,7 @@ const BuyProductModal = ({ product, user, isOpen, onClose, onSuccess }) => {
           {/* Purchase Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Number of Units
               </label>
               <Input
@@ -149,35 +149,35 @@ const BuyProductModal = ({ product, user, isOpen, onClose, onSuccess }) => {
                 {...register('units', { valueAsNumber: true })}
               />
               {errors.units && (
-                <p className="text-sm text-red-600 mt-1">{errors.units.message}</p>
+                <p className="text-sm text-destructive mt-1">{errors.units.message}</p>
               )}
             </div>
 
             {/* Calculation Summary */}
             <Card>
               <CardContent>
-                <h3 className="font-semibold text-gray-900 mb-4">Purchase Summary</h3>
+                <h3 className="font-semibold text-foreground mb-4">Purchase Summary</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Units:</span>
-                    <span className="font-medium">{formatNumber(units)}</span>
+                    <span className="text-muted-foreground">Units:</span>
+                    <span className="font-medium text-foreground">{formatNumber(units)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Price per unit:</span>
-                    <span className="font-medium">{formatCurrency(product?.price || 0)}</span>
+                    <span className="text-muted-foreground">Price per unit:</span>
+                    <span className="font-medium text-foreground">{formatCurrency(product?.price || 0)}</span>
                   </div>
-                  <div className="border-t border-gray-200 pt-3">
+                  <div className="border-t border-border pt-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-900 font-semibold">Total Amount:</span>
-                      <span className="text-lg font-bold text-primary-600">
+                      <span className="text-foreground font-semibold">Total Amount:</span>
+                      <span className="text-lg font-bold text-primary">
                         {formatCurrency(totalAmount)}
                       </span>
                     </div>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Remaining Balance:</span>
+                    <span className="text-muted-foreground">Remaining Balance:</span>
                     <span className={`font-medium ${
-                      remainingBalance >= 0 ? 'text-success-600' : 'text-danger-600'
+                      remainingBalance >= 0 ? 'text-green-600' : 'text-red-600'
                     }`}>
                       {formatCurrency(remainingBalance)}
                     </span>
@@ -188,14 +188,14 @@ const BuyProductModal = ({ product, user, isOpen, onClose, onSuccess }) => {
 
             {/* Warning for insufficient balance */}
             {remainingBalance < 0 && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
                 <div className="flex items-center space-x-2">
                   <AlertCircle className="h-5 w-5 text-red-600" />
-                  <span className="text-sm font-medium text-red-800">
+                  <span className="text-sm font-medium text-red-800 dark:text-red-200">
                     Insufficient Balance
                   </span>
                 </div>
-                <p className="text-sm text-red-700 mt-1">
+                <p className="text-sm text-red-700 dark:text-red-300 mt-1">
                   You need {formatCurrency(Math.abs(remainingBalance))} more to complete this purchase.
                 </p>
               </div>

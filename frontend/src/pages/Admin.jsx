@@ -93,12 +93,12 @@ const Admin = () => {
 
   if (user?.role !== 'admin') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-full max-w-md">
           <CardContent className="p-6 text-center">
             <UserX className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Access Denied</h2>
-            <p className="text-gray-600">You don't have admin privileges to access this page.</p>
+            <h2 className="text-xl font-semibold text-foreground mb-2">Access Denied</h2>
+            <p className="text-muted-foreground">You don't have admin privileges to access this page.</p>
           </CardContent>
         </Card>
       </div>
@@ -114,22 +114,22 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600">Manage users, transactions, and platform settings</p>
+          <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
+          <p className="text-muted-foreground">Manage users, transactions, and platform settings</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-blue-600 mb-1">Total Users</p>
-                  <p className="text-2xl font-bold text-blue-900">{users.length}</p>
+                  <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">Total Users</p>
+                  <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{users.length}</p>
                 </div>
                 <div className="p-3 bg-blue-500 rounded-full shadow-lg">
                   <Users className="h-6 w-6 text-white" />
@@ -138,12 +138,12 @@ const Admin = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-green-600 mb-1">Total Transactions</p>
-                  <p className="text-2xl font-bold text-green-900">{transactions.length}</p>
+                  <p className="text-sm font-medium text-green-600 dark:text-green-400 mb-1">Total Transactions</p>
+                  <p className="text-2xl font-bold text-green-900 dark:text-green-100">{transactions.length}</p>
                 </div>
                 <div className="p-3 bg-green-500 rounded-full shadow-lg">
                   <Activity className="h-6 w-6 text-white" />
@@ -152,12 +152,12 @@ const Admin = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-yellow-50 to-yellow-100">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-yellow-600 mb-1">Total Volume</p>
-                  <p className="text-2xl font-bold text-yellow-900">
+                  <p className="text-sm font-medium text-yellow-600 dark:text-yellow-400 mb-1">Total Volume</p>
+                  <p className="text-2xl font-bold text-yellow-900 dark:text-yellow-100">
                     ₹{transactions.reduce((sum, t) => sum + t.amount, 0).toLocaleString('en-IN')}
                   </p>
                 </div>
@@ -168,12 +168,12 @@ const Admin = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-purple-600 mb-1">KYC Approved</p>
-                  <p className="text-2xl font-bold text-purple-900">
+                  <p className="text-sm font-medium text-purple-600 dark:text-purple-400 mb-1">KYC Approved</p>
+                  <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
                     {users.filter(u => u.kyc_status === 'approved').length}
                   </p>
                 </div>
@@ -188,9 +188,9 @@ const Admin = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Users Management */}
           <Card className="border-0 shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 border-b">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-b">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold text-blue-900">Users Management</CardTitle>
+                <CardTitle className="text-lg font-semibold text-blue-900 dark:text-blue-100">Users Management</CardTitle>
                 <div className="flex items-center space-x-2">
                   <Input
                     placeholder="Search users..."
@@ -203,30 +203,30 @@ const Admin = () => {
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-border">
+                  <thead className="bg-muted/50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         User
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         Balance
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-background divide-y divide-border">
                     {filteredUsers.map((user) => (
-                      <tr key={user.id} className="hover:bg-gray-50">
+                      <tr key={user.id} className="hover:bg-muted/50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
-                            <div className="text-sm font-semibold text-gray-900">{user.name}</div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
+                            <div className="text-sm font-semibold text-foreground">{user.name}</div>
+                            <div className="text-sm text-muted-foreground">{user.email}</div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -234,7 +234,7 @@ const Admin = () => {
                             {user.kyc_status}
                           </Badge>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                           ₹{user.wallet_balance.toLocaleString('en-IN')}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -265,35 +265,35 @@ const Admin = () => {
 
           {/* Recent Transactions */}
           <Card className="border-0 shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-green-50 to-green-100 border-b">
-              <CardTitle className="text-lg font-semibold text-green-900">Recent Transactions</CardTitle>
+            <CardHeader className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-b">
+              <CardTitle className="text-lg font-semibold text-green-900 dark:text-green-100">Recent Transactions</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-border">
+                  <thead className="bg-muted/50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         User
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         Product
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         Type
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         Amount
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-background divide-y divide-border">
                     {transactions.map((transaction) => (
-                      <tr key={transaction.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <tr key={transaction.id} className="hover:bg-muted/50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                           {transaction.user_name}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                           {transaction.product_name}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -301,7 +301,7 @@ const Admin = () => {
                             {transaction.type}
                           </Badge>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                           ₹{transaction.amount.toLocaleString('en-IN')}
                         </td>
                       </tr>

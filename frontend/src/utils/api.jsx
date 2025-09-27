@@ -81,6 +81,20 @@ export const portfolioAPI = {
   removeFromWatchlist: (productId) => api.delete(`/portfolio/watchlist/${productId}`),
 };
 
+export const ordersAPI = {
+  createOrder: (orderData) => api.post('/orders', orderData),
+  getUserOrders: () => api.get('/orders'),
+  getOrderStats: () => api.get('/orders/stats'),
+  cancelOrder: (orderId) => api.delete(`/orders/${orderId}`),
+};
+
+export const analyticsAPI = {
+  getPortfolioAnalytics: () => api.get('/analytics/portfolio'),
+  getMarketAnalytics: () => api.get('/analytics/market'),
+  getUserTradingAnalytics: () => api.get('/analytics/trading'),
+  getRiskAnalysis: () => api.get('/analytics/risk'),
+};
+
 export const adminAPI = {
   getAllUsers: () => api.get('/admin/users'),
   getUserById: (userId) => api.get(`/admin/users/${userId}`),

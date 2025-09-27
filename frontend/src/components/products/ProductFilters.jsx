@@ -25,15 +25,15 @@ const ProductFilters = ({
   const hasActiveFilters = searchQuery || selectedCategory !== 'All' || sortBy !== 'name';
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+    <div className="bg-card p-6 rounded-lg shadow-sm border border-border mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+        <h3 className="text-lg font-semibold text-foreground">Filters</h3>
         {hasActiveFilters && (
           <Button
             variant="ghost"
             size="sm"
             onClick={onClearFilters}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-muted-foreground hover:text-foreground"
           >
             <X className="h-4 w-4 mr-1" />
             Clear All
@@ -51,13 +51,13 @@ const ProductFilters = ({
             className="pl-10"
           />
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-gray-400" />
+            <Search className="h-4 w-4 text-muted-foreground" />
           </div>
         </div>
 
         {/* Category Filter */}
         <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             Category
           </label>
           <Select value={selectedCategory} onValueChange={onCategoryChange}>
@@ -76,7 +76,7 @@ const ProductFilters = ({
 
         {/* Sort */}
         <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             Sort By
           </label>
           <Select value={sortBy} onValueChange={onSortChange}>
@@ -96,36 +96,36 @@ const ProductFilters = ({
 
       {/* Active Filters Display */}
       {hasActiveFilters && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="mt-4 pt-4 border-t border-border">
           <div className="flex flex-wrap gap-2">
             {searchQuery && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-800">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary/10 text-primary">
                 Search: "{searchQuery}"
                 <button
                   onClick={() => onSearchChange('')}
-                  className="ml-2 hover:text-primary-600"
+                  className="ml-2 hover:text-primary/80"
                 >
                   <X className="h-3 w-3" />
                 </button>
               </span>
             )}
             {selectedCategory !== 'All' && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-success-100 text-success-800">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
                 Category: {selectedCategory}
                 <button
                   onClick={() => onCategoryChange('All')}
-                  className="ml-2 hover:text-success-600"
+                  className="ml-2 hover:text-green-600 dark:hover:text-green-400"
                 >
                   <X className="h-3 w-3" />
                 </button>
               </span>
             )}
             {sortBy !== 'name' && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-warning-100 text-warning-800">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200">
                 Sort: {sortOptions.find(opt => opt.value === sortBy)?.label}
                 <button
                   onClick={() => onSortChange('name')}
-                  className="ml-2 hover:text-warning-600"
+                  className="ml-2 hover:text-yellow-600 dark:hover:text-yellow-400"
                 >
                   <X className="h-3 w-3" />
                 </button>

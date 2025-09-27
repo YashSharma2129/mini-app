@@ -94,23 +94,23 @@ const Products = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Enhanced Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Investment Products</h1>
-              <p className="text-gray-600 mt-2">
+              <h1 className="text-3xl font-bold text-foreground">Investment Products</h1>
+              <p className="text-muted-foreground mt-2">
                 Discover and invest in stocks and mutual funds
               </p>
             </div>
-            <div className="flex items-center space-x-2 bg-white rounded-lg shadow-lg p-1">
+            <div className="flex items-center space-x-2 bg-card rounded-lg shadow-lg p-1">
               <Button
                 variant={viewMode === 'grid' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('grid')}
-                className={viewMode === 'grid' ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-gray-100'}
+                className={viewMode === 'grid' ? 'shadow-lg' : ''}
               >
                 <Grid className="h-4 w-4" />
               </Button>
@@ -118,7 +118,7 @@ const Products = () => {
                 variant={viewMode === 'list' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('list')}
-                className={viewMode === 'list' ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-gray-100'}
+                className={viewMode === 'list' ? 'shadow-lg' : ''}
               >
                 <List className="h-4 w-4" />
               </Button>
@@ -139,9 +139,9 @@ const Products = () => {
 
         {/* Enhanced Results Summary */}
         <div className="mb-6">
-          <div className="bg-white rounded-lg shadow-lg p-4 border-0">
-            <p className="text-gray-600 font-medium">
-              Showing <span className="text-blue-600 font-bold">{filteredProducts.length}</span> of <span className="text-gray-900 font-bold">{products.length}</span> products
+          <div className="bg-card rounded-lg shadow-lg p-4 border-0">
+            <p className="text-muted-foreground font-medium">
+              Showing <span className="text-primary font-bold">{filteredProducts.length}</span> of <span className="text-foreground font-bold">{products.length}</span> products
             </p>
           </div>
         </div>
@@ -149,10 +149,10 @@ const Products = () => {
         {/* Enhanced Products Grid/List */}
         {filteredProducts.length === 0 ? (
           <div className="text-center py-12">
-            <div className="bg-white rounded-xl shadow-lg p-8 border-0">
-              <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-              <p className="text-gray-600">
+            <div className="bg-card rounded-xl shadow-lg p-8 border-0">
+              <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">No products found</h3>
+              <p className="text-muted-foreground">
                 Try adjusting your search or filter criteria
               </p>
             </div>
@@ -178,7 +178,7 @@ const Products = () => {
           <div className="text-center mt-8">
             <Button 
               variant="outline" 
-              className="bg-white hover:bg-gray-50 border-gray-300 hover:border-gray-400 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="shadow-lg hover:shadow-xl transition-all duration-300"
             >
               Load More Products
             </Button>

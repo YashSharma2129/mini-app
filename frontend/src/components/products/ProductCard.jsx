@@ -11,7 +11,7 @@ import {
   Eye,
   Star
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardFooter } from '../ui/card';
+import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { toast } from '../../hooks/use-toast';
@@ -108,13 +108,13 @@ const ProductCard = ({ product, onWatchlistUpdate }) => {
           <button
             onClick={handleWatchlistToggle}
             disabled={isLoading}
-            className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-1.5 hover:bg-muted rounded-full transition-colors"
           >
             <Heart 
               className={`h-4 w-4 ${
                 isWatched 
                   ? 'text-red-500 fill-current' 
-                  : 'text-gray-400 hover:text-red-500'
+                  : 'text-muted-foreground hover:text-red-500'
               }`} 
             />
           </button>
@@ -122,11 +122,11 @@ const ProductCard = ({ product, onWatchlistUpdate }) => {
 
         {/* Product name and description */}
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
+          <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2">
             {product.name}
           </h3>
           {product.description && (
-            <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
               {product.description}
             </p>
           )}
@@ -135,7 +135,7 @@ const ProductCard = ({ product, onWatchlistUpdate }) => {
         {/* Price and change */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-2xl font-bold text-gray-900">
+            <span className="text-2xl font-bold text-foreground">
               {formatCurrency(product.price)}
             </span>
             <div className={`flex items-center gap-1 text-sm font-medium ${
@@ -156,22 +156,22 @@ const ProductCard = ({ product, onWatchlistUpdate }) => {
         {/* Market data */}
         <div className="space-y-1 mb-4">
           {product.market_cap && (
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-muted-foreground">
               Market Cap: ₹{formatNumber(product.market_cap / 10000000)}Cr
             </div>
           )}
           {product.volume && (
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-muted-foreground">
               Volume: {formatNumber(product.volume)}
             </div>
           )}
         </div>
 
         {/* Rating and actions */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+        <div className="flex items-center justify-between pt-3 border-t border-border">
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4 text-yellow-400 fill-current" />
-            <span className="text-sm text-gray-600 font-medium">
+            <span className="text-sm text-muted-foreground font-medium">
               {(4.0 + Math.random()).toFixed(1)}
             </span>
           </div>

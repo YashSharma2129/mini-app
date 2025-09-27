@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Badge } from '../components/ui/badge';
-import api from '../utils/api';
+import { analyticsAPI } from '../utils/api';
 import { toast } from '../hooks/use-toast';
 import PortfolioAnalytics from '../components/analytics/PortfolioAnalytics';
 import { 
@@ -29,9 +29,9 @@ const Analytics = () => {
   const fetchAllAnalytics = async () => {
     try {
       const [marketResponse, tradingResponse, riskResponse] = await Promise.all([
-        api.get('/analytics/market'),
-        api.get('/analytics/trading'),
-        api.get('/analytics/risk')
+        analyticsAPI.getMarketAnalytics(),
+        analyticsAPI.getUserTradingAnalytics(),
+        analyticsAPI.getRiskAnalysis()
       ]);
 
       setMarketAnalytics(marketResponse.data.data);
@@ -49,16 +49,26 @@ const Analytics = () => {
   };
 
   const formatCurrency = (amount) => {
+    // Convert to number and handle all edge cases
+    const numAmount = Number(amount);
+    if (isNaN(numAmount) || numAmount === null || numAmount === undefined) {
+      return '₹0';
+    }
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
-    }).format(amount);
+    }).format(numAmount);
   };
 
   const formatPercentage = (value) => {
-    return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
+    // Convert to number and handle all edge cases
+    const numValue = Number(value);
+    if (isNaN(numValue) || numValue === null || numValue === undefined) {
+      return '0.00%';
+    }
+    return `${numValue >= 0 ? '+' : ''}${numValue.toFixed(2)}%`;
   };
 
   const getReturnColor = (value) => {
@@ -80,8 +90,8 @@ const Analytics = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics Dashboard</h1>
-        <p className="text-gray-600">Comprehensive analytics and insights for your trading portfolio</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Analytics Dashboard</h1>
+        <p className="text-muted-foreground">Comprehensive analytics and insights for your trading portfolio</p>
       </div>
 
       <Tabs defaultValue="portfolio" className="space-y-6">
@@ -105,8 +115,8 @@ const Analytics = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Total Products</p>
-                        <p className="text-2xl font-bold text-gray-900">{marketAnalytics.marketStats.total_products}</p>
+                        <p className="text-sm font-medium text-muted-foreground">Total Products</p>
+                        <p className="text-2xl font-bold text-foreground">{marketAnalytics?.marketStats?.total_products || 0}</p>
                       </div>
                       <BarChart3 className="h-8 w-8 text-blue-500" />
                     </div>
@@ -117,9 +127,9 @@ const Analytics = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Avg Price</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {formatCurrency(marketAnalytics.marketStats.avg_price)}
+                        <p className="text-sm font-medium text-muted-foreground">Avg Price</p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {formatCurrency(marketAnalytics?.marketStats?.avg_price)}
                         </p>
                       </div>
                       <DollarSign className="h-8 w-8 text-green-500" />
@@ -131,9 +141,9 @@ const Analytics = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Market Cap</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {formatCurrency(marketAnalytics.marketStats.total_market_cap)}
+                        <p className="text-sm font-medium text-muted-foreground">Market Cap</p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {formatCurrency(marketAnalytics?.marketStats?.total_market_cap)}
                         </p>
                       </div>
                       <TrendingUp className="h-8 w-8 text-purple-500" />
@@ -145,9 +155,9 @@ const Analytics = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Avg Volume</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {formatCurrency(marketAnalytics.marketStats.avg_volume)}
+                        <p className="text-sm font-medium text-muted-foreground">Avg Volume</p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {formatCurrency(marketAnalytics?.marketStats?.avg_volume)}
                         </p>
                       </div>
                       <Activity className="h-8 w-8 text-orange-500" />
@@ -163,15 +173,15 @@ const Analytics = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {marketAnalytics.topPerformers.map((product, index) => {
+                    {(marketAnalytics?.topPerformers || []).map((product, index) => {
                       const ReturnIcon = getReturnIcon(product.price_change);
                       return (
                         <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">
                           <div className="flex items-center space-x-4">
-                            <div className="text-2xl font-bold text-gray-400">#{index + 1}</div>
+                            <div className="text-2xl font-bold text-muted-foreground">#{index + 1}</div>
                             <div>
                               <div className="font-semibold">{product.name}</div>
-                              <div className="text-sm text-gray-500">{product.symbol} • {product.category}</div>
+                              <div className="text-sm text-muted-foreground">{product.symbol} • {product.category}</div>
                             </div>
                           </div>
                           <div className="text-right">
@@ -195,7 +205,7 @@ const Analytics = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <RechartsBarChart data={marketAnalytics.categoryPerformance}>
+                    <RechartsBarChart data={marketAnalytics?.categoryPerformance || []}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="category" />
                       <YAxis />
@@ -218,8 +228,8 @@ const Analytics = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Total Transactions</p>
-                        <p className="text-2xl font-bold text-gray-900">{tradingAnalytics.summary.total_transactions}</p>
+                        <p className="text-sm font-medium text-muted-foreground">Total Transactions</p>
+                        <p className="text-2xl font-bold text-foreground">{tradingAnalytics?.summary?.total_transactions || 0}</p>
                       </div>
                       <Activity className="h-8 w-8 text-blue-500" />
                     </div>
@@ -230,9 +240,9 @@ const Analytics = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Buy Amount</p>
+                        <p className="text-sm font-medium text-muted-foreground">Buy Amount</p>
                         <p className="text-2xl font-bold text-green-600">
-                          {formatCurrency(tradingAnalytics.summary.total_buy_amount)}
+                          {formatCurrency(tradingAnalytics?.summary?.total_buy_amount)}
                         </p>
                       </div>
                       <TrendingUp className="h-8 w-8 text-green-500" />
@@ -244,9 +254,9 @@ const Analytics = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Sell Amount</p>
+                        <p className="text-sm font-medium text-muted-foreground">Sell Amount</p>
                         <p className="text-2xl font-bold text-red-600">
-                          {formatCurrency(tradingAnalytics.summary.total_sell_amount)}
+                          {formatCurrency(tradingAnalytics?.summary?.total_sell_amount)}
                         </p>
                       </div>
                       <TrendingDown className="h-8 w-8 text-red-500" />
@@ -258,9 +268,9 @@ const Analytics = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Avg Price</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {formatCurrency(tradingAnalytics.summary.avg_transaction_price)}
+                        <p className="text-sm font-medium text-muted-foreground">Avg Price</p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {formatCurrency(tradingAnalytics?.summary?.avg_transaction_price)}
                         </p>
                       </div>
                       <DollarSign className="h-8 w-8 text-purple-500" />
@@ -276,7 +286,7 @@ const Analytics = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <RechartsBarChart data={tradingAnalytics.monthlyActivity}>
+                    <RechartsBarChart data={tradingAnalytics?.monthlyActivity || []}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis />
@@ -295,18 +305,18 @@ const Analytics = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {tradingAnalytics.topTradedProducts.map((product, index) => (
+                    {(tradingAnalytics?.topTradedProducts || []).map((product, index) => (
                       <div key={product.name} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="flex items-center space-x-4">
-                          <div className="text-2xl font-bold text-gray-400">#{index + 1}</div>
+                          <div className="text-2xl font-bold text-muted-foreground">#{index + 1}</div>
                           <div>
                             <div className="font-semibold">{product.name}</div>
-                            <div className="text-sm text-gray-500">{product.symbol} • {product.category}</div>
+                            <div className="text-sm text-muted-foreground">{product.symbol} • {product.category}</div>
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="font-semibold">{product.transaction_count} transactions</div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-muted-foreground">
                             {formatCurrency(product.total_amount)} total
                           </div>
                         </div>
@@ -328,9 +338,9 @@ const Analytics = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">HHI Index</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {riskAnalysis.concentration.hhi.toFixed(0)}
+                        <p className="text-sm font-medium text-muted-foreground">HHI Index</p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {(riskAnalysis.concentration.hhi || 0).toFixed(0)}
                         </p>
                       </div>
                       <AlertTriangle className="h-8 w-8 text-yellow-500" />
@@ -342,9 +352,9 @@ const Analytics = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Top Holding %</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {riskAnalysis.concentration.topHoldingPercentage.toFixed(1)}%
+                        <p className="text-sm font-medium text-muted-foreground">Top Holding %</p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {(riskAnalysis.concentration.topHoldingPercentage || 0).toFixed(1)}%
                         </p>
                       </div>
                       <PieChart className="h-8 w-8 text-blue-500" />
@@ -356,9 +366,9 @@ const Analytics = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Top 5 Holdings %</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {riskAnalysis.concentration.top5HoldingsPercentage.toFixed(1)}%
+                        <p className="text-sm font-medium text-muted-foreground">Top 5 Holdings %</p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {(riskAnalysis.concentration.top5HoldingsPercentage || 0).toFixed(1)}%
                         </p>
                       </div>
                       <BarChart3 className="h-8 w-8 text-green-500" />
@@ -370,9 +380,9 @@ const Analytics = () => {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Diversification</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {riskAnalysis.diversification.categoryDiversification}
+                        <p className="text-sm font-medium text-muted-foreground">Diversification</p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {riskAnalysis?.diversification?.categoryDiversification || 0}
                         </p>
                       </div>
                       <Activity className="h-8 w-8 text-purple-500" />
@@ -391,42 +401,42 @@ const Analytics = () => {
                     <div className="flex items-center justify-between p-4 border rounded-lg">
                       <div>
                         <div className="font-semibold">Portfolio Concentration</div>
-                        <div className="text-sm text-gray-500">Risk level based on HHI index</div>
+                        <div className="text-sm text-muted-foreground">Risk level based on HHI index</div>
                       </div>
                       <Badge variant={
-                        riskAnalysis.concentration.hhi > 2500 ? 'destructive' :
-                        riskAnalysis.concentration.hhi > 1500 ? 'secondary' : 'default'
+                        (riskAnalysis?.concentration?.hhi || 0) > 2500 ? 'destructive' :
+                        (riskAnalysis?.concentration?.hhi || 0) > 1500 ? 'secondary' : 'default'
                       }>
-                        {riskAnalysis.concentration.hhi > 2500 ? 'High Risk' :
-                         riskAnalysis.concentration.hhi > 1500 ? 'Medium Risk' : 'Low Risk'}
+                        {(riskAnalysis?.concentration?.hhi || 0) > 2500 ? 'High Risk' :
+                         (riskAnalysis?.concentration?.hhi || 0) > 1500 ? 'Medium Risk' : 'Low Risk'}
                       </Badge>
                     </div>
 
                     <div className="flex items-center justify-between p-4 border rounded-lg">
                       <div>
                         <div className="font-semibold">Diversification</div>
-                        <div className="text-sm text-gray-500">Number of different categories</div>
+                        <div className="text-sm text-muted-foreground">Number of different categories</div>
                       </div>
                       <Badge variant={
-                        riskAnalysis.diversification.categoryDiversification < 2 ? 'destructive' :
-                        riskAnalysis.diversification.categoryDiversification < 4 ? 'secondary' : 'default'
+                        (riskAnalysis?.diversification?.categoryDiversification || 0) < 2 ? 'destructive' :
+                        (riskAnalysis?.diversification?.categoryDiversification || 0) < 4 ? 'secondary' : 'default'
                       }>
-                        {riskAnalysis.diversification.categoryDiversification < 2 ? 'Poor' :
-                         riskAnalysis.diversification.categoryDiversification < 4 ? 'Fair' : 'Good'}
+                        {(riskAnalysis?.diversification?.categoryDiversification || 0) < 2 ? 'Poor' :
+                         (riskAnalysis?.diversification?.categoryDiversification || 0) < 4 ? 'Fair' : 'Good'}
                       </Badge>
                     </div>
 
                     <div className="flex items-center justify-between p-4 border rounded-lg">
                       <div>
                         <div className="font-semibold">Top Holding Risk</div>
-                        <div className="text-sm text-gray-500">Percentage of largest holding</div>
+                        <div className="text-sm text-muted-foreground">Percentage of largest holding</div>
                       </div>
                       <Badge variant={
-                        riskAnalysis.concentration.topHoldingPercentage > 30 ? 'destructive' :
-                        riskAnalysis.concentration.topHoldingPercentage > 20 ? 'secondary' : 'default'
+                        (riskAnalysis?.concentration?.topHoldingPercentage || 0) > 30 ? 'destructive' :
+                        (riskAnalysis?.concentration?.topHoldingPercentage || 0) > 20 ? 'secondary' : 'default'
                       }>
-                        {riskAnalysis.concentration.topHoldingPercentage > 30 ? 'High Risk' :
-                         riskAnalysis.concentration.topHoldingPercentage > 20 ? 'Medium Risk' : 'Low Risk'}
+                        {(riskAnalysis?.concentration?.topHoldingPercentage || 0) > 30 ? 'High Risk' :
+                         (riskAnalysis?.concentration?.topHoldingPercentage || 0) > 20 ? 'Medium Risk' : 'Low Risk'}
                       </Badge>
                     </div>
                   </div>

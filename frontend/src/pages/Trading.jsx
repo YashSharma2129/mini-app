@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import OrderForm from '../components/trading/OrderForm';
 import OrderBook from '../components/trading/OrderBook';
 import PriceAlerts from '../components/trading/PriceAlerts';
-import api from '../utils/api';
+import { productsAPI, ordersAPI } from '../utils/api';
 import { toast } from '../hooks/use-toast';
 import { TrendingUp, TrendingDown, DollarSign, Activity } from 'lucide-react';
 
@@ -32,7 +32,7 @@ const Trading = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await api.get('/products');
+      const response = await productsAPI.getAllProducts();
       setProducts(response.data.data.products || []);
     } catch (error) {
       console.error('Failed to fetch products:', error);
@@ -42,7 +42,7 @@ const Trading = () => {
 
   const fetchTradingStats = async () => {
     try {
-      const response = await api.get('/orders/stats');
+      const response = await ordersAPI.getOrderStats();
       setTradingStats(response.data.data);
     } catch (error) {
       console.error('Failed to fetch trading stats:', error);
@@ -70,8 +70,8 @@ const Trading = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Trading Dashboard</h1>
-        <p className="text-gray-600">Advanced trading features and order management</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Trading Dashboard</h1>
+        <p className="text-muted-foreground">Advanced trading features and order management</p>
       </div>
 
       {/* Enhanced Trading Stats */}
@@ -142,9 +142,9 @@ const Trading = () => {
         </TabsList>
 
         <TabsContent value="products" className="space-y-6">
-          <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
-              <CardTitle className="text-blue-900">Available Products</CardTitle>
+          <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-b border-border">
+              <CardTitle className="text-blue-900 dark:text-blue-100">Available Products</CardTitle>
             </CardHeader>
             <CardContent>
               {Array.isArray(products) && products.length > 0 ? (
@@ -152,27 +152,27 @@ const Trading = () => {
                   {products.map((product) => (
                     <div
                       key={product.id}
-                      className="border-0 shadow-lg bg-white rounded-xl p-4 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                      className="border-0 shadow-lg bg-card rounded-xl p-4 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
                       onClick={() => handleProductSelect(product)}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold text-lg">{product.name}</h3>
-                        <span className="text-sm text-gray-500">{product.symbol}</span>
+                        <h3 className="font-semibold text-lg text-foreground">{product.name}</h3>
+                        <span className="text-sm text-muted-foreground">{product.symbol}</span>
                       </div>
                       
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Current Price:</span>
-                          <span className="font-semibold">₹{product.price}</span>
+                          <span className="text-muted-foreground">Current Price:</span>
+                          <span className="font-semibold text-foreground">₹{product.price}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Category:</span>
-                          <span className="font-semibold">{product.category}</span>
+                          <span className="text-muted-foreground">Category:</span>
+                          <span className="font-semibold text-foreground">{product.category}</span>
                         </div>
                         {product.pe_ratio && (
                           <div className="flex justify-between">
-                            <span className="text-gray-600">P/E Ratio:</span>
-                            <span className="font-semibold">{product.pe_ratio}</span>
+                            <span className="text-muted-foreground">P/E Ratio:</span>
+                            <span className="font-semibold text-foreground">{product.pe_ratio}</span>
                           </div>
                         )}
                       </div>
@@ -180,7 +180,7 @@ const Trading = () => {
                       <div className="mt-4 flex space-x-2">
                         <Button
                           size="sm"
-                          className="flex-1 bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                          className="flex-1 shadow-lg hover:shadow-xl transition-all duration-300"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedProduct({ ...product, orderType: 'buy' });
@@ -207,9 +207,9 @@ const Trading = () => {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No products available</h3>
-                  <p className="text-gray-600">Products are being loaded or there are no products to display.</p>
+                  <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">No products available</h3>
+                  <p className="text-muted-foreground">Products are being loaded or there are no products to display.</p>
                 </div>
               )}
             </CardContent>

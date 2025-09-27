@@ -9,8 +9,6 @@ import {
   Settings, 
   TrendingUp,
   Wallet,
-  Shield,
-  BarChart3,
   Bell
 } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -39,20 +37,20 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className="bg-background shadow-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <TrendingUp className="h-8 w-8 text-primary-600" />
-            <span className="text-xl font-bold text-gray-900">TradingApp</span>
+            <span className="text-xl font-bold text-foreground">TradingApp</span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link
               to="/products"
-              className="text-gray-600 hover:text-primary-600 transition-colors"
+              className="text-muted-foreground hover:text-primary-600 transition-colors"
             >
               Products
             </Link>
@@ -60,32 +58,32 @@ const Header = () => {
               <>
                 <Link
                   to="/portfolio"
-                  className="text-gray-600 hover:text-primary-600 transition-colors"
+                  className="text-muted-foreground hover:text-primary-600 transition-colors"
                 >
                   Portfolio
                 </Link>
                 <Link
                   to="/transactions"
-                  className="text-gray-600 hover:text-primary-600 transition-colors"
+                  className="text-muted-foreground hover:text-primary-600 transition-colors"
                 >
                   Transactions
                 </Link>
                 <Link
                   to="/trading"
-                  className="text-gray-600 hover:text-primary-600 transition-colors"
+                  className="text-muted-foreground hover:text-primary-600 transition-colors"
                 >
                   Trading
                 </Link>
                 <Link
                   to="/analytics"
-                  className="text-gray-600 hover:text-primary-600 transition-colors"
+                  className="text-muted-foreground hover:text-primary-600 transition-colors"
                 >
                   Analytics
                 </Link>
                 {user?.role === 'admin' && (
                   <Link
                     to="/admin"
-                    className="text-gray-600 hover:text-primary-600 transition-colors"
+                    className="text-muted-foreground hover:text-primary-600 transition-colors"
                   >
                     Admin
                   </Link>
@@ -104,10 +102,10 @@ const Header = () => {
                 <div className="relative">
                 <button
                   onClick={toggleProfileMenu}
-                  className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 transition-colors"
+                  className="flex items-center space-x-2 text-foreground hover:text-primary-600 transition-colors"
                 >
                   <div className="flex items-center space-x-2">
-                    <div className="h-8 w-8 bg-primary-100 rounded-full flex items-center justify-center">
+                    <div className="h-8 w-8 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
                       <User className="h-4 w-4 text-primary-600" />
                     </div>
                     <span className="text-sm font-medium">{user?.name}</span>
@@ -115,20 +113,20 @@ const Header = () => {
                 </button>
 
                 {isProfileMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
+                  <div className="absolute right-0 mt-2 w-48 bg-popover rounded-md shadow-lg py-1 z-50 border border-border">
+                    <div className="px-4 py-2 border-b border-border">
+                      <p className="text-sm font-medium text-foreground">{user?.name}</p>
+                      <p className="text-xs text-muted-foreground">{user?.email}</p>
                       <div className="flex items-center mt-1">
-                        <Wallet className="h-3 w-3 text-gray-400 mr-1" />
-                        <span className="text-xs text-gray-600">
+                        <Wallet className="h-3 w-3 text-muted-foreground mr-1" />
+                        <span className="text-xs text-muted-foreground">
                           ₹{user?.wallet_balance?.toLocaleString('en-IN')}
                         </span>
                       </div>
                     </div>
                     <Link
                       to="/profile"
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="flex items-center px-4 py-2 text-sm text-foreground hover:bg-muted"
                       onClick={() => setIsProfileMenuOpen(false)}
                     >
                       <Settings className="h-4 w-4 mr-2" />
@@ -136,7 +134,7 @@ const Header = () => {
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="flex items-center w-full px-4 py-2 text-sm text-foreground hover:bg-muted"
                     >
                       <LogOut className="h-4 w-4 mr-2" />
                       Logout
@@ -165,7 +163,7 @@ const Header = () => {
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
-              className="text-gray-600 hover:text-primary-600 transition-colors"
+              className="text-muted-foreground hover:text-primary-600 transition-colors"
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -174,11 +172,11 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
+          <div className="md:hidden border-t border-border py-4">
             <nav className="flex flex-col space-y-4">
               <Link
                 to="/products"
-                className="text-gray-600 hover:text-primary-600 transition-colors"
+                className="text-muted-foreground hover:text-primary-600 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Products
@@ -187,28 +185,28 @@ const Header = () => {
                 <>
                   <Link
                     to="/portfolio"
-                    className="text-gray-600 hover:text-primary-600 transition-colors"
+                    className="text-muted-foreground hover:text-primary-600 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Portfolio
                   </Link>
                   <Link
                     to="/transactions"
-                    className="text-gray-600 hover:text-primary-600 transition-colors"
+                    className="text-muted-foreground hover:text-primary-600 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Transactions
                   </Link>
                   <Link
                     to="/trading"
-                    className="text-gray-600 hover:text-primary-600 transition-colors"
+                    className="text-muted-foreground hover:text-primary-600 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Trading
                   </Link>
                   <Link
                     to="/analytics"
-                    className="text-gray-600 hover:text-primary-600 transition-colors"
+                    className="text-muted-foreground hover:text-primary-600 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Analytics
@@ -216,32 +214,32 @@ const Header = () => {
                   {user?.role === 'admin' && (
                     <Link
                       to="/admin"
-                      className="text-gray-600 hover:text-primary-600 transition-colors"
+                      className="text-muted-foreground hover:text-primary-600 transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Admin
                     </Link>
                   )}
-                  <div className="border-t border-gray-200 pt-4">
+                  <div className="border-t border-border pt-4">
                     <div className="flex items-center space-x-2 mb-4">
-                      <div className="h-8 w-8 bg-primary-100 rounded-full flex items-center justify-center">
+                      <div className="h-8 w-8 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
                         <User className="h-4 w-4 text-primary-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-                        <p className="text-xs text-gray-500">{user?.email}</p>
+                        <p className="text-sm font-medium text-foreground">{user?.name}</p>
+                        <p className="text-xs text-muted-foreground">{user?.email}</p>
                       </div>
                     </div>
                     <Link
                       to="/profile"
-                      className="block text-gray-600 hover:text-primary-600 transition-colors mb-2"
+                      className="block text-muted-foreground hover:text-primary-600 transition-colors mb-2"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Profile
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="block text-gray-600 hover:text-primary-600 transition-colors"
+                      className="block text-muted-foreground hover:text-primary-600 transition-colors"
                     >
                       Logout
                     </button>
@@ -249,9 +247,9 @@ const Header = () => {
                 </>
               )}
               {!isAuthenticated && (
-                <div className="border-t border-gray-200 pt-4 space-y-2">
+                <div className="border-t border-border pt-4 space-y-2">
                   <div className="flex items-center justify-between px-4 py-2">
-                    <span className="text-sm text-gray-600">Theme</span>
+                    <span className="text-sm text-muted-foreground">Theme</span>
                     <ThemeToggle />
                   </div>
                   <Link to="/login" onClick={() => setIsMenuOpen(false)}>

@@ -8,7 +8,7 @@ import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { toast } from '../../hooks/use-toast';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email format').min(1, 'Email is required'),
@@ -37,14 +37,19 @@ const LoginForm = () => {
         navigate('/dashboard');
       }
     } catch (error) {
-      console.error('Login error:', error);
+      const message = error.response?.data?.message || 'Login failed. Please check your credentials.';
+      toast({
+        title: "Login Error",
+        description: message,
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <Card>
           <CardHeader className="space-y-1">
@@ -126,7 +131,7 @@ const LoginForm = () => {
 
             <div className="mt-4 p-4 bg-muted rounded-lg">
               <p className="text-sm text-muted-foreground mb-2">Demo Login:</p>
-              <p className="text-xs font-mono">
+              <p className="text-xs font-mono text-foreground">
                 Email: admin@tradingapp.com<br />
                 Password: password123
               </p>

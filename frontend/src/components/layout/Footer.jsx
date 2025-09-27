@@ -13,20 +13,20 @@ const Footer = () => {
               <TrendingUp className="h-8 w-8 text-primary-400" />
               <span className="text-xl font-bold">TradingApp</span>
             </div>
-            <p className="text-gray-300 mb-4 max-w-md">
+            <p className="text-muted-foreground mb-4 max-w-md">
               Your trusted financial trading platform. Buy and sell stocks and mutual funds 
               with ease and security.
             </p>
             <div className="space-y-2">
-              <div className="flex items-center space-x-2 text-gray-300">
+              <div className="flex items-center space-x-2 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
                 <span>B-89, Malviya Nagar, New Delhi</span>
               </div>
-              <div className="flex items-center space-x-2 text-gray-300">
+              <div className="flex items-center space-x-2 text-muted-foreground">
                 <Phone className="h-4 w-4" />
                 <span>+91 82794-25232</span>
               </div>
-              <div className="flex items-center space-x-2 text-gray-300">
+              <div className="flex items-center space-x-2 text-muted-foreground">
                 <Mail className="h-4 w-4" />
                 <span>ai@enxtai.com</span>
               </div>
@@ -38,22 +38,22 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/products" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/products" className="text-muted-foreground hover:text-foreground transition-colors">
                   Products
                 </Link>
               </li>
               <li>
-                <Link to="/portfolio" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/portfolio" className="text-muted-foreground hover:text-foreground transition-colors">
                   Portfolio
                 </Link>
               </li>
               <li>
-                <Link to="/transactions" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/transactions" className="text-muted-foreground hover:text-foreground transition-colors">
                   Transactions
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors">
                   About Us
                 </Link>
               </li>
@@ -65,22 +65,22 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/help" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/help" className="text-muted-foreground hover:text-foreground transition-colors">
                   Help Center
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
                   Terms of Service
                 </Link>
               </li>
@@ -88,8 +88,8 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-gray-400">
+        <div className="border-t border-border mt-8 pt-8 text-center">
+          <p className="text-muted-foreground">
             © 2024 TradingApp. All rights reserved. Built for EnxtAI Full-Stack Developer Assignment.
           </p>
         </div>

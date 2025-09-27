@@ -92,7 +92,7 @@ const NotificationCenter = () => {
       case 'price_alert':
         return <AlertCircle className="h-4 w-4 text-yellow-500" />;
       case 'system':
-        return <Info className="h-4 w-4 text-gray-500" />;
+        return <Info className="h-4 w-4 text-muted-foreground" />;
       case 'transaction':
         return <CheckCircle className="h-4 w-4 text-green-500" />;
       case 'portfolio_update':
@@ -100,7 +100,7 @@ const NotificationCenter = () => {
       case 'market_news':
         return <Info className="h-4 w-4 text-blue-500" />;
       default:
-        return <Bell className="h-4 w-4 text-gray-500" />;
+        return <Bell className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -113,7 +113,7 @@ const NotificationCenter = () => {
       case 'price_alert':
         return 'border-yellow-200 bg-yellow-50';
       case 'system':
-        return 'border-gray-200 bg-gray-50';
+        return 'border-border bg-muted/50';
       case 'transaction':
         return 'border-green-200 bg-green-50';
       case 'portfolio_update':
@@ -121,7 +121,7 @@ const NotificationCenter = () => {
       case 'market_news':
         return 'border-blue-200 bg-blue-50';
       default:
-        return 'border-gray-200 bg-gray-50';
+        return 'border-border bg-muted/50';
     }
   };
 
@@ -217,8 +217,8 @@ const NotificationCenter = () => {
         
         <div className="overflow-y-auto max-h-[60vh] space-y-3">
           {notifications.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <Bell className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <div className="text-center py-8 text-muted-foreground">
+              <Bell className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
               <p>No notifications yet</p>
             </div>
           ) : (
@@ -241,10 +241,10 @@ const NotificationCenter = () => {
                           <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" />
                         )}
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         {notification.message}
                       </p>
-                      <p className="text-xs text-gray-500 mt-2">
+                      <p className="text-xs text-muted-foreground mt-2">
                         {formatTimeAgo(notification.timestamp)}
                       </p>
                     </div>

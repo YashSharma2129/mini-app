@@ -3,6 +3,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const http = require('http');
+const { Server } = require('socket.io');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const { connectRedis } = require('./config/redis');
@@ -20,6 +23,15 @@ const notificationRoutes = require('./routes/notifications');
 const auditRoutes = require('./routes/audit');
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.NODE_ENV === 'production' 
+      ? process.env.FRONTEND_URL 
+      : ['http://localhost:3000', 'http://localhost:3001'],
+    credentials: true
+  }
+});
 const PORT = process.env.PORT || 5001;
 
 app.use(helmet());
@@ -36,7 +48,7 @@ app.use(limiter);
 
 app.use(cors({  
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-frontend-domain.com'] 
+    ? process.env.FRONTEND_URL 
     : ['http://localhost:3000', 'http://localhost:3001'],
   credentials: true
 }));
@@ -66,6 +78,65 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/audit', auditRoutes);
 
+// WebSocket authentication middleware
+io.use((socket, next) => {
+  const token = socket.handshake.query.token;
+  if (!token) {
+    return next(new Error('Authentication error: No token provided'));
+  }
+  
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    socket.userId = decoded.userId;
+    next();
+  } catch (err) {
+    next(new Error('Authentication error: Invalid token'));
+  }
+});
+
+// WebSocket connection handling
+io.on('connection', (socket) => {
+  console.log(`User ${socket.userId} connected via WebSocket`);
+  
+  // Join user to their personal room
+  socket.join(`user_${socket.userId}`);
+  
+  // Handle price updates subscription
+  socket.on('subscribe_prices', (productIds) => {
+    if (Array.isArray(productIds)) {
+      productIds.forEach(productId => {
+        socket.join(`product_${productId}`);
+      });
+    }
+  });
+  
+  // Handle price updates unsubscription
+  socket.on('unsubscribe_prices', (productIds) => {
+    if (Array.isArray(productIds)) {
+      productIds.forEach(productId => {
+        socket.leave(`product_${productId}`);
+      });
+    }
+  });
+  
+  // Handle order updates subscription
+  socket.on('subscribe_orders', () => {
+    socket.join(`orders_${socket.userId}`);
+  });
+  
+  // Handle notifications subscription
+  socket.on('subscribe_notifications', () => {
+    socket.join(`notifications_${socket.userId}`);
+  });
+  
+  socket.on('disconnect', () => {
+    console.log(`User ${socket.userId} disconnected from WebSocket`);
+  });
+});
+
+// Make io available to other modules
+app.set('io', io);
+
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
@@ -87,10 +158,11 @@ const startServer = async () => {
   try {
     await connectRedis();
     
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+      console.log(`🔌 WebSocket server running on ws://localhost:${PORT}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);

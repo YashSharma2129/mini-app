@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from './use-toast';
+import { io } from 'socket.io-client';
 
 const useWebSocket = (url, options = {}) => {
   const { isAuthenticated, user } = useAuth();
@@ -9,109 +10,105 @@ const useWebSocket = (url, options = {}) => {
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
   const [lastMessage, setLastMessage] = useState(null);
   const reconnectTimeoutRef = useRef(null);
+  const optionsRef = useRef(options);
   const maxReconnectAttempts = options.maxReconnectAttempts || 5;
   const reconnectInterval = options.reconnectInterval || 3000;
+
+  // Update options ref when options change
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
 
   const connect = useCallback(() => {
     if (!isAuthenticated || !user) return;
 
     try {
-      const ws = new WebSocket(`${url}?token=${localStorage.getItem('token')}`);
+      const token = localStorage.getItem('token');
+      const socket = io(url, {
+        query: { token },
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionAttempts: maxReconnectAttempts,
+        reconnectionDelay: reconnectInterval,
+        timeout: 20000,
+      });
       
-      ws.onopen = () => {
+      socket.on('connect', () => {
         if (import.meta.env.DEV) {
-          console.log('WebSocket connected');
+          console.log('Socket.IO connected');
         }
         setIsConnected(true);
         setReconnectAttempts(0);
-        setSocket(ws);
+        setSocket(socket);
         
-        if (options.onOpen) {
-          options.onOpen();
+        if (optionsRef.current.onOpen) {
+          optionsRef.current.onOpen();
         }
-      };
+      });
 
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          setLastMessage(data);
-          
-          if (options.onMessage) {
-            options.onMessage(data);
-          }
-
-          // Handle different message types
-          switch (data.type) {
-            case 'notification':
-              toast({
-                title: data.title || 'Notification',
-                description: data.message,
-                variant: data.variant || 'default',
-              });
-              break;
-            case 'price_alert':
-              toast({
-                title: 'Price Alert',
-                description: `${data.product_name} has reached ₹${data.target_price}`,
-                variant: 'default',
-              });
-              break;
-            case 'order_update':
-              toast({
-                title: 'Order Update',
-                description: `Your ${data.order_type} order for ${data.product_name} has been ${data.status}`,
-                variant: data.status === 'executed' ? 'default' : 'destructive',
-              });
-              break;
-            case 'portfolio_update':
-              // Portfolio updates don't need toast notifications
-              break;
-            default:
-              console.log('Unknown message type:', data.type);
-          }
-        } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
+      socket.on('message', (data) => {
+        setLastMessage(data);
+        
+        if (optionsRef.current.onMessage) {
+          optionsRef.current.onMessage(data);
         }
-      };
 
-      ws.onclose = (event) => {
+        // Handle different message types
+        switch (data.type) {
+          case 'notification':
+            toast({
+              title: data.title || 'Notification',
+              description: data.message,
+              variant: data.variant || 'default',
+            });
+            break;
+          case 'price_alert':
+            toast({
+              title: 'Price Alert',
+              description: `${data.product_name} has reached ₹${data.target_price}`,
+              variant: 'default',
+            });
+            break;
+          case 'order_update':
+            toast({
+              title: 'Order Update',
+              description: `Your ${data.order_type} order for ${data.product_name} has been ${data.status}`,
+              variant: data.status === 'executed' ? 'default' : 'destructive',
+            });
+            break;
+          case 'portfolio_update':
+            // Portfolio updates don't need toast notifications
+            break;
+          default:
+            console.log('Unknown message type:', data.type);
+        }
+      });
+
+      socket.on('disconnect', (reason) => {
         if (import.meta.env.DEV) {
-          console.log('WebSocket disconnected:', event.code, event.reason);
+          console.log('Socket.IO disconnected:', reason);
         }
         setIsConnected(false);
         setSocket(null);
         
-        if (options.onClose) {
-          options.onClose(event);
+        if (optionsRef.current.onClose) {
+          optionsRef.current.onClose({ reason });
         }
+      });
 
-        // Attempt to reconnect if not a manual close
-        if (event.code !== 1000 && reconnectAttempts < maxReconnectAttempts) {
-          const delay = reconnectInterval * Math.pow(2, reconnectAttempts);
-          if (import.meta.env.DEV) {
-            console.log(`Attempting to reconnect in ${delay}ms...`);
-          }
-          
-          reconnectTimeoutRef.current = setTimeout(() => {
-            setReconnectAttempts(prev => prev + 1);
-            connect();
-          }, delay);
-        }
-      };
-
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
+      socket.on('connect_error', (error) => {
+        console.error('Socket.IO connection error:', error);
         setIsConnected(false);
         
-        if (options.onError) {
-          options.onError(error);
+        if (optionsRef.current.onError) {
+          optionsRef.current.onError(error);
         }
-      };
+      });
 
     } catch (error) {
-      console.error('Failed to create WebSocket connection:', error);
+      console.error('Failed to create Socket.IO connection:', error);
     }
-  }, [isAuthenticated, user, url, options, reconnectAttempts, maxReconnectAttempts, reconnectInterval]);
+  }, [isAuthenticated, user, url, maxReconnectAttempts, reconnectInterval]);
 
   const disconnect = useCallback(() => {
     if (reconnectTimeoutRef.current) {
@@ -119,18 +116,18 @@ const useWebSocket = (url, options = {}) => {
     }
     
     if (socket) {
-      socket.close(1000, 'Manual disconnect');
+      socket.disconnect();
     }
     
     setIsConnected(false);
     setSocket(null);
   }, [socket]);
 
-  const sendMessage = useCallback((message) => {
+  const sendMessage = useCallback((event, data) => {
     if (socket && isConnected) {
-      socket.send(JSON.stringify(message));
+      socket.emit(event, data);
     } else if (import.meta.env.DEV) {
-      console.warn('WebSocket is not connected');
+      console.warn('Socket.IO is not connected');
     }
   }, [socket, isConnected]);
 
@@ -144,7 +141,7 @@ const useWebSocket = (url, options = {}) => {
     return () => {
       disconnect();
     };
-  }, [isAuthenticated, user, connect, disconnect]);
+  }, [isAuthenticated, user]);
 
   // Cleanup on unmount
   useEffect(() => {

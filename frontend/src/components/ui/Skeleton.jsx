@@ -38,7 +38,7 @@ export const ProductCardSkeleton = () => (
       </div>
     </div>
     
-    <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+    <div className="flex justify-between items-center pt-3 border-t border-border">
       <Skeleton className="h-4 w-12" />
       <div className="flex space-x-2">
         <Skeleton className="h-8 w-16" />

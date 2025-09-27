@@ -22,25 +22,25 @@ export const WebSocketProvider = ({ children }) => {
     sendMessage,
     reconnectAttempts
   } = useWebSocket(
-    import.meta.env.VITE_WS_URL || 'ws://localhost:5001/ws',
+    import.meta.env.VITE_WS_URL || 'http://localhost:5001',
     {
       onOpen: () => {
         if (import.meta.env.DEV) {
-          console.log('WebSocket connection established');
+          console.log('Socket.IO connection established');
         }
       },
       onClose: (event) => {
         if (import.meta.env.DEV) {
-          console.log('WebSocket connection closed:', event.code, event.reason);
+          console.log('Socket.IO connection closed:', event.reason);
         }
       },
       onError: (error) => {
-        console.error('WebSocket error:', error);
+        console.error('Socket.IO error:', error);
       },
       onMessage: (data) => {
-        // Handle global WebSocket messages
+        // Handle global Socket.IO messages
         if (import.meta.env.DEV) {
-          console.log('WebSocket message received:', data);
+          console.log('Socket.IO message received:', data);
         }
       }
     }

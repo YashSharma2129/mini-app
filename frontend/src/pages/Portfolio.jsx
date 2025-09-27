@@ -90,22 +90,22 @@ const Portfolio = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Portfolio</h1>
-          <p className="text-gray-600">Manage your investments and watchlist</p>
+          <h1 className="text-3xl font-bold text-foreground">Portfolio</h1>
+          <p className="text-muted-foreground">Manage your investments and watchlist</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200">
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:from-blue-900/20 dark:via-blue-800/20 dark:to-blue-700/20">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-blue-700 mb-1">Wallet Balance</p>
-                  <p className="text-2xl font-bold text-blue-900">
+                  <p className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1">Wallet Balance</p>
+                  <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                     {formatCurrency(user?.wallet_balance || 0)}
                   </p>
                 </div>
@@ -116,12 +116,12 @@ const Portfolio = () => {
             </CardContent>
           </Card>
 
-          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-green-50 via-green-100 to-green-200">
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-green-50 via-green-100 to-green-200 dark:from-green-900/20 dark:via-green-800/20 dark:to-green-700/20">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-green-700 mb-1">Total Invested</p>
-                  <p className="text-2xl font-bold text-green-900">
+                  <p className="text-sm font-medium text-green-700 dark:text-green-300 mb-1">Total Invested</p>
+                  <p className="text-2xl font-bold text-green-900 dark:text-green-100">
                     {formatCurrency(portfolioSummary?.total_invested || 0)}
                   </p>
                 </div>
@@ -132,12 +132,12 @@ const Portfolio = () => {
             </CardContent>
           </Card>
 
-          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-yellow-50 via-yellow-100 to-yellow-200">
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-yellow-50 via-yellow-100 to-yellow-200 dark:from-yellow-900/20 dark:via-yellow-800/20 dark:to-yellow-700/20">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-yellow-700 mb-1">Current Value</p>
-                  <p className="text-2xl font-bold text-yellow-900">
+                  <p className="text-sm font-medium text-yellow-700 dark:text-yellow-300 mb-1">Current Value</p>
+                  <p className="text-2xl font-bold text-yellow-900 dark:text-yellow-100">
                     {formatCurrency(portfolioSummary?.current_value || 0)}
                   </p>
                 </div>
@@ -148,11 +148,11 @@ const Portfolio = () => {
             </CardContent>
           </Card>
 
-          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-purple-50 via-purple-100 to-purple-200">
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-purple-50 via-purple-100 to-purple-200 dark:from-purple-900/20 dark:via-purple-800/20 dark:to-purple-700/20">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-purple-700 mb-1">Total Returns</p>
+                  <p className="text-sm font-medium text-purple-700 dark:text-purple-300 mb-1">Total Returns</p>
                   <p className={`text-2xl font-bold ${getReturnsColor(returns.amount)}`}>
                     {formatCurrency(returns.amount)}
                   </p>
@@ -183,7 +183,7 @@ const Portfolio = () => {
                   className={`relative flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-300 ${
                     activeTab === tab.id
                       ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg transform scale-105'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                   }`}
                 >
                   <div className="flex items-center justify-center space-x-2">
@@ -192,7 +192,7 @@ const Portfolio = () => {
                       <span className={`py-0.5 px-2 rounded-full text-xs font-semibold ${
                         activeTab === tab.id
                           ? 'bg-white/20 text-white'
-                          : 'bg-gray-100 text-gray-600'
+                          : 'bg-accent text-muted-foreground'
                       }`}>
                         {tab.count}
                       </span>
@@ -224,9 +224,9 @@ const Portfolio = () => {
             <CardContent>
               {portfolio.length === 0 ? (
                 <div className="text-center py-12">
-                  <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No holdings yet</h3>
-                  <p className="text-gray-600 mb-4">Start building your portfolio by investing in products</p>
+                  <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">No holdings yet</h3>
+                  <p className="text-muted-foreground mb-4">Start building your portfolio by investing in products</p>
                   <Link to="/products">
                     <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300">
                       Browse Products
@@ -238,28 +238,28 @@ const Portfolio = () => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                           Product
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                           Units
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                           Avg Price
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                           Current Price
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                           Invested
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                           Current Value
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                           Returns
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
@@ -273,27 +273,27 @@ const Portfolio = () => {
                           <tr key={holding.product_id}>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div>
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-sm font-medium text-foreground">
                                   {holding.product_name}
                                 </div>
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-muted-foreground">
                                   {holding.category}
                                 </div>
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                               {formatNumber(holding.total_units)}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                               {formatCurrency(holding.total_invested / holding.total_units)}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                               {formatCurrency(holding.current_price)}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                               {formatCurrency(holding.total_invested)}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                               {formatCurrency(currentValue)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -353,9 +353,9 @@ const Portfolio = () => {
             <CardContent>
               {watchlist.length === 0 ? (
                 <div className="text-center py-12">
-                  <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No items in watchlist</h3>
-                  <p className="text-gray-600 mb-4">Add products to your watchlist to track their performance</p>
+                  <Heart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">No items in watchlist</h3>
+                  <p className="text-muted-foreground mb-4">Add products to your watchlist to track their performance</p>
                   <Link to="/products">
                     <Button className="bg-pink-600 hover:bg-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300">
                       Browse Products
@@ -372,7 +372,7 @@ const Portfolio = () => {
                             <Badge variant={item.category === 'Stocks' ? 'primary' : 'success'}>
                               {item.category}
                             </Badge>
-                            <h3 className="text-lg font-semibold text-gray-900 mt-2">
+                            <h3 className="text-lg font-semibold text-foreground mt-2">
                               {item.name}
                             </h3>
                             <p className="text-2xl font-bold text-primary-600 mt-2">

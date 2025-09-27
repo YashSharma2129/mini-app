@@ -140,7 +140,7 @@ const ProductDetail = () => {
   const priceChange = getPriceChange();
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <div className="mb-6">
@@ -158,25 +158,25 @@ const ProductDetail = () => {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Enhanced Product Header */}
-            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+            <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <Badge variant={product.category === 'Stocks' ? 'primary' : 'success'}>
+                      <Badge variant={product.category === 'Stocks' ? 'default' : 'secondary'}>
                         {product.category}
                       </Badge>
                       {product.pe_ratio && (
-                        <Badge variant="secondary">
+                        <Badge variant="outline">
                           P/E: {product.pe_ratio}
                         </Badge>
                       )}
                     </div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                    <h1 className="text-3xl font-bold text-foreground mb-2">
                       {product.name}
                     </h1>
                     {product.description && (
-                      <p className="text-gray-600 mb-4">
+                      <p className="text-muted-foreground mb-4">
                         {product.description}
                       </p>
                     )}
@@ -200,14 +200,14 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Price Section */}
-                <div className="border-t border-gray-200 pt-6">
+                <div className="border-t border-border pt-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-4xl font-bold text-gray-900 mb-2">
+                      <div className="text-4xl font-bold text-foreground mb-2">
                         {formatCurrency(product.price)}
                       </div>
                       <div className={`flex items-center space-x-2 ${
-                        priceChange.isPositive ? 'text-success-600' : 'text-danger-600'
+                        priceChange.isPositive ? 'text-green-600' : 'text-red-600'
                       }`}>
                         {priceChange.isPositive ? (
                           <TrendingUp className="h-5 w-5" />
@@ -226,9 +226,9 @@ const ProductDetail = () => {
                       <div className="flex items-center space-x-1 mb-1">
                         <Star className="h-4 w-4 text-yellow-400 fill-current" />
                         <span className="text-sm font-medium">4.2</span>
-                        <span className="text-sm text-gray-500">(1,234 reviews)</span>
+                        <span className="text-sm text-muted-foreground">(1,234 reviews)</span>
                       </div>
-                      <p className="text-sm text-gray-600">Last updated: {new Date().toLocaleDateString()}</p>
+                      <p className="text-sm text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</p>
                     </div>
                   </div>
                 </div>
@@ -236,19 +236,26 @@ const ProductDetail = () => {
             </Card>
 
             {/* Enhanced Price Chart */}
-            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-              <CardHeader className="bg-gradient-to-r from-green-50 to-green-100 border-b border-green-200">
-                <h3 className="text-lg font-semibold text-green-900">Price History (6 Months)</h3>
+            <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-b border-border">
+                <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">Price History (6 Months)</h3>
               </CardHeader>
               <CardContent>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
+                      <YAxis stroke="hsl(var(--muted-foreground))" />
                       <Tooltip 
                         formatter={(value) => [formatCurrency(value), 'Price']}
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--card))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                          color: 'hsl(var(--card-foreground))'
+                        }}
                       />
                       <Line 
                         type="monotone" 
@@ -264,44 +271,44 @@ const ProductDetail = () => {
             </Card>
 
             {/* Enhanced Product Details */}
-            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-              <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 border-b border-purple-200">
-                <h3 className="text-lg font-semibold text-purple-900">Product Details</h3>
+            <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-b border-border">
+                <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100">Product Details</h3>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Category:</span>
-                      <span className="font-medium">{product.category}</span>
+                      <span className="text-muted-foreground">Category:</span>
+                      <span className="font-medium text-foreground">{product.category}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Current Price:</span>
-                      <span className="font-medium">{formatCurrency(product.price)}</span>
+                      <span className="text-muted-foreground">Current Price:</span>
+                      <span className="font-medium text-foreground">{formatCurrency(product.price)}</span>
                     </div>
                     {product.pe_ratio && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">P/E Ratio:</span>
-                        <span className="font-medium">{product.pe_ratio}</span>
+                        <span className="text-muted-foreground">P/E Ratio:</span>
+                        <span className="font-medium text-foreground">{product.pe_ratio}</span>
                       </div>
                     )}
                   </div>
                   <div className="space-y-4">
                     {product.market_cap && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Market Cap:</span>
-                        <span className="font-medium">₹{formatNumber(product.market_cap / 10000000)}Cr</span>
+                        <span className="text-muted-foreground">Market Cap:</span>
+                        <span className="font-medium text-foreground">₹{formatNumber(product.market_cap / 10000000)}Cr</span>
                       </div>
                     )}
                     {product.volume && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Volume:</span>
-                        <span className="font-medium">{formatNumber(product.volume)}</span>
+                        <span className="text-muted-foreground">Volume:</span>
+                        <span className="font-medium text-foreground">{formatNumber(product.volume)}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Listed:</span>
-                      <span className="font-medium">{new Date(product.created_at).toLocaleDateString()}</span>
+                      <span className="text-muted-foreground">Listed:</span>
+                      <span className="font-medium text-foreground">{new Date(product.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
@@ -312,24 +319,24 @@ const ProductDetail = () => {
           {/* Enhanced Sidebar */}
           <div className="space-y-6">
             {/* Enhanced Buy Section */}
-            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+            <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
               <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Buy {product.name}</h3>
+                <h3 className="text-lg font-semibold mb-4 text-foreground">Buy {product.name}</h3>
                 
                 {isAuthenticated ? (
                   <div className="space-y-4">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
                       <div className="flex items-center space-x-2 mb-2">
-                        <BarChart3 className="h-5 w-5 text-blue-600" />
-                        <span className="text-sm font-medium text-blue-800">Available Balance</span>
+                        <BarChart3 className="h-5 w-5 text-primary" />
+                        <span className="text-sm font-medium text-primary">Available Balance</span>
                       </div>
-                      <p className="text-2xl font-bold text-blue-900">
+                      <p className="text-2xl font-bold text-foreground">
                         {formatCurrency(user?.wallet_balance || 0)}
                       </p>
                     </div>
 
                     <Button
-                      className="w-full bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="w-full shadow-lg hover:shadow-xl transition-all duration-300"
                       size="lg"
                       onClick={() => setShowBuyModal(true)}
                     >
@@ -338,18 +345,18 @@ const ProductDetail = () => {
                     </Button>
 
                     <div className="text-center">
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         Minimum investment: {formatCurrency(product.price * 0.01)}
                       </p>
                     </div>
                   </div>
                 ) : (
                   <div className="text-center space-y-4">
-                    <p className="text-gray-600">
+                    <p className="text-muted-foreground">
                       Please login to buy this product
                     </p>
                     <Button
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="w-full shadow-lg hover:shadow-xl transition-all duration-300"
                       onClick={() => navigate('/login')}
                     >
                       Login to Buy
@@ -360,37 +367,37 @@ const ProductDetail = () => {
             </Card>
 
             {/* Enhanced Quick Stats */}
-            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-              <CardHeader className="bg-gradient-to-r from-yellow-50 to-yellow-100 border-b border-yellow-200">
-                <h3 className="text-lg font-semibold text-yellow-900">Quick Stats</h3>
+            <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 border-b border-border">
+                <h3 className="text-lg font-semibold text-yellow-900 dark:text-yellow-100">Quick Stats</h3>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">52W High:</span>
-                    <span className="font-medium">{formatCurrency(product.price * 1.15)}</span>
+                    <span className="text-muted-foreground">52W High:</span>
+                    <span className="font-medium text-foreground">{formatCurrency(product.price * 1.15)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">52W Low:</span>
-                    <span className="font-medium">{formatCurrency(product.price * 0.85)}</span>
+                    <span className="text-muted-foreground">52W Low:</span>
+                    <span className="font-medium text-foreground">{formatCurrency(product.price * 0.85)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Avg Volume:</span>
-                    <span className="font-medium">{formatNumber(product.volume || 0)}</span>
+                    <span className="text-muted-foreground">Avg Volume:</span>
+                    <span className="font-medium text-foreground">{formatNumber(product.volume || 0)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Market Cap:</span>
-                    <span className="font-medium">₹{formatNumber((product.market_cap || 0) / 10000000)}Cr</span>
+                    <span className="text-muted-foreground">Market Cap:</span>
+                    <span className="font-medium text-foreground">₹{formatNumber((product.market_cap || 0) / 10000000)}Cr</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Enhanced Risk Disclaimer */}
-            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+            <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
               <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4 text-warning-600">Risk Disclaimer</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="text-lg font-semibold mb-4 text-orange-600">Risk Disclaimer</h3>
+                <p className="text-sm text-muted-foreground">
                   Investments in securities are subject to market risks. Please read all scheme related 
                   documents carefully before investing. Past performance is not indicative of future results.
                 </p>

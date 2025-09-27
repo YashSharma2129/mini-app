@@ -33,10 +33,10 @@ const PWAInstallPrompt = () => {
   }, []);
 
   return (
-    <Card className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 z-50 shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+    <Card className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 z-50 shadow-xl border-0 bg-card/95 backdrop-blur-sm">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-gray-900">
+          <CardTitle className="text-lg font-semibold text-foreground">
             Install TradingApp
           </CardTitle>
           <Button
@@ -51,11 +51,11 @@ const PWAInstallPrompt = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Install TradingApp for a better experience with offline access and faster loading.
           </p>
           
-          <div className="flex items-center space-x-4 text-xs text-gray-500">
+          <div className="flex items-center space-x-4 text-xs text-muted-foreground">
             <div className="flex items-center space-x-1">
               <Smartphone className="h-3 w-3" />
               <span>Mobile App</span>

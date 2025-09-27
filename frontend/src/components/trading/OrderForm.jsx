@@ -114,7 +114,7 @@ const OrderForm = ({ product, onOrderSuccess, onClose }) => {
               </SelectContent>
             </Select>
             {errors.orderType && (
-              <p className="text-sm text-red-600">{errors.orderType.message}</p>
+              <p className="text-sm text-destructive">{errors.orderType.message}</p>
             )}
           </div>
 
@@ -130,7 +130,7 @@ const OrderForm = ({ product, onOrderSuccess, onClose }) => {
               {...register('quantity')}
             />
             {errors.quantity && (
-              <p className="text-sm text-red-600">{errors.quantity.message}</p>
+              <p className="text-sm text-destructive">{errors.quantity.message}</p>
             )}
           </div>
 
@@ -146,7 +146,7 @@ const OrderForm = ({ product, onOrderSuccess, onClose }) => {
               {...register('orderPrice')}
             />
             {errors.orderPrice && (
-              <p className="text-sm text-red-600">{errors.orderPrice.message}</p>
+              <p className="text-sm text-destructive">{errors.orderPrice.message}</p>
             )}
             <p className="text-sm text-gray-500">
               Leave empty for market order at current price

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Financial Trading App Backend API",
   "main": "src/server.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
@@ -42,17 +43,19 @@
     "multer": "^1.4.5-lts.1",
     "pg": "^8.11.3",
     "redis": "^4.6.10",
-    "uuid": "^9.0.1"
+    "socket.io": "^4.8.1",
+    "uuid": "^9.0.1",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2",
-    "jest": "^29.7.0",
-    "supertest": "^6.3.3",
     "@types/jest": "^29.5.8",
+    "artillery": "^2.0.0",
     "eslint": "^8.57.0",
     "eslint-plugin-security": "^1.7.1",
-    "prettier": "^3.2.5",
+    "jest": "^29.7.0",
     "jscpd": "^3.5.1",
-    "artillery": "^2.0.0"
+    "nodemon": "^3.0.2",
+    "prettier": "^3.2.5",
+    "supertest": "^6.3.3"
   }
 }

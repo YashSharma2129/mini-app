@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
-import api from '../../utils/api';
+import { analyticsAPI } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import { 
   TrendingUp, 
@@ -25,7 +25,7 @@ const PortfolioAnalytics = () => {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await api.get('/analytics/portfolio');
+      const response = await analyticsAPI.getPortfolioAnalytics();
       setAnalytics(response.data.data);
     } catch (error) {
       toast({
@@ -39,16 +39,26 @@ const PortfolioAnalytics = () => {
   };
 
   const formatCurrency = (amount) => {
+    // Convert to number and handle all edge cases
+    const numAmount = Number(amount);
+    if (isNaN(numAmount) || numAmount === null || numAmount === undefined) {
+      return '₹0';
+    }
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
-    }).format(amount);
+    }).format(numAmount);
   };
 
   const formatPercentage = (value) => {
-    return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
+    // Convert to number and handle all edge cases
+    const numValue = Number(value);
+    if (isNaN(numValue) || numValue === null || numValue === undefined) {
+      return '0.00%';
+    }
+    return `${numValue >= 0 ? '+' : ''}${numValue.toFixed(2)}%`;
   };
 
   const getReturnColor = (value) => {
@@ -69,8 +79,8 @@ const PortfolioAnalytics = () => {
 
   if (!analytics) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+      <div className="text-center py-8 text-muted-foreground">
+        <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
         <p>No analytics data available</p>
       </div>
     );
@@ -95,8 +105,8 @@ const PortfolioAnalytics = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Invested</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-muted-foreground">Total Invested</p>
+                <p className="text-2xl font-bold text-foreground">
                   {formatCurrency(portfolio.totalInvested)}
                 </p>
               </div>
@@ -109,8 +119,8 @@ const PortfolioAnalytics = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Current Value</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-muted-foreground">Current Value</p>
+                <p className="text-2xl font-bold text-foreground">
                   {formatCurrency(portfolio.totalCurrentValue)}
                 </p>
               </div>
@@ -123,7 +133,7 @@ const PortfolioAnalytics = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Unrealized P&L</p>
+                <p className="text-sm font-medium text-muted-foreground">Unrealized P&L</p>
                 <p className={`text-2xl font-bold ${getReturnColor(portfolio.totalUnrealizedPnL)}`}>
                   {formatCurrency(portfolio.totalUnrealizedPnL)}
                 </p>
@@ -139,7 +149,7 @@ const PortfolioAnalytics = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Return</p>
+                <p className="text-sm font-medium text-muted-foreground">Total Return</p>
                 <p className={`text-2xl font-bold ${getReturnColor(portfolio.totalReturnPercentage)}`}>
                   {formatPercentage(portfolio.totalReturnPercentage)}
                 </p>
@@ -170,7 +180,7 @@ const PortfolioAnalytics = () => {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
@@ -179,7 +189,7 @@ const PortfolioAnalytics = () => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => `${value.toFixed(1)}%`} />
+                <Tooltip formatter={(value) => `${(value || 0).toFixed(1)}%`} />
               </RechartsPieChart>
             </ResponsiveContainer>
           </CardContent>
@@ -236,7 +246,7 @@ const PortfolioAnalytics = () => {
                       <td className="py-3 px-4">
                         <div>
                           <div className="font-semibold">{holding.product_name}</div>
-                          <div className="text-sm text-gray-500">{holding.symbol}</div>
+                          <div className="text-sm text-muted-foreground">{holding.symbol}</div>
                         </div>
                       </td>
                       <td className="text-right py-3 px-4">{holding.quantity}</td>
