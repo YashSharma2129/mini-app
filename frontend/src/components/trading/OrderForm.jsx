@@ -14,11 +14,25 @@ const schema = yup.object({
   orderType: yup.string().required('Order type is required'),
   quantity: yup
     .number()
+    .transform((value, originalValue) => {
+      // Handle empty string as undefined
+      if (originalValue === '' || originalValue === null || originalValue === undefined) {
+        return undefined;
+      }
+      return value;
+    })
     .positive('Quantity must be positive')
     .min(0.01, 'Minimum quantity is 0.01')
     .required('Quantity is required'),
   orderPrice: yup
     .number()
+    .transform((value, originalValue) => {
+      // Handle empty string as undefined for optional field
+      if (originalValue === '' || originalValue === null || originalValue === undefined) {
+        return undefined;
+      }
+      return value;
+    })
     .positive('Price must be positive')
     .min(0.01, 'Minimum price is 0.01')
     .nullable()
@@ -81,10 +95,23 @@ const OrderForm = ({ product, onOrderSuccess, onClose }) => {
     }
   };
 
+  const formatCurrency = (amount) => {
+    if (isNaN(amount) || amount === null || amount === undefined) {
+      return '₹0.00';
+    }
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
+  };
+
   const calculateTotal = () => {
-    if (!quantity || !product) return 0;
+    if (!quantity || isNaN(quantity) || !product) return 0;
     const price = orderPrice || product.price;
-    return parseFloat(quantity) * price;
+    const total = parseFloat(quantity) * price;
+    return isNaN(total) ? 0 : total;
   };
 
   const handleClose = () => {
@@ -142,7 +169,7 @@ const OrderForm = ({ product, onOrderSuccess, onClose }) => {
               type="number"
               step="0.01"
               min="0.01"
-              placeholder={`Current: ₹${product?.price || 0}`}
+              placeholder={`Current: ${formatCurrency(product?.price || 0)}`}
               {...register('orderPrice')}
             />
             {errors.orderPrice && (
@@ -157,17 +184,17 @@ const OrderForm = ({ product, onOrderSuccess, onClose }) => {
           <div className="bg-gray-50 p-3 rounded-lg">
             <div className="flex justify-between text-sm">
               <span>Current Price:</span>
-              <span className="font-semibold">₹{product?.price || 0}</span>
+              <span className="font-semibold">{formatCurrency(product?.price || 0)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span>Order Price:</span>
               <span className="font-semibold">
-                ₹{orderPrice || product?.price || 0}
+                {formatCurrency(orderPrice || product?.price || 0)}
               </span>
             </div>
             <div className="flex justify-between text-sm font-bold border-t pt-2 mt-2">
               <span>Total Amount:</span>
-              <span>₹{calculateTotal().toFixed(2)}</span>
+              <span>{formatCurrency(calculateTotal())}</span>
             </div>
           </div>
 

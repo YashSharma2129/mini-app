@@ -43,9 +43,26 @@ const Trading = () => {
   const fetchTradingStats = async () => {
     try {
       const response = await ordersAPI.getOrderStats();
-      setTradingStats(response.data.data);
+      const stats = response.data.data;
+      
+      // Ensure all values are numbers, not NaN
+      setTradingStats({
+        totalOrders: parseInt(stats.total_orders) || 0,
+        executedOrders: parseInt(stats.executed_orders) || 0,
+        pendingOrders: parseInt(stats.pending_orders) || 0,
+        totalBuyAmount: parseFloat(stats.total_buy_amount) || 0,
+        totalSellAmount: parseFloat(stats.total_sell_amount) || 0
+      });
     } catch (error) {
       console.error('Failed to fetch trading stats:', error);
+      // Set default values on error
+      setTradingStats({
+        totalOrders: 0,
+        executedOrders: 0,
+        pendingOrders: 0,
+        totalBuyAmount: 0,
+        totalSellAmount: 0
+      });
     }
   };
 
@@ -60,11 +77,17 @@ const Trading = () => {
   };
 
   const getTotalTradingVolume = () => {
-    return tradingStats.totalBuyAmount + tradingStats.totalSellAmount;
+    const buyAmount = tradingStats.totalBuyAmount || 0;
+    const sellAmount = tradingStats.totalSellAmount || 0;
+    const total = buyAmount + sellAmount;
+    return isNaN(total) ? 0 : total;
   };
 
   const getNetPosition = () => {
-    return tradingStats.totalSellAmount - tradingStats.totalBuyAmount;
+    const buyAmount = tradingStats.totalBuyAmount || 0;
+    const sellAmount = tradingStats.totalSellAmount || 0;
+    const net = sellAmount - buyAmount;
+    return isNaN(net) ? 0 : net;
   };
 
   return (
