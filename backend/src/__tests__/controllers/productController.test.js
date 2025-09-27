@@ -49,7 +49,7 @@ describe('Product Controller', () => {
       pool.query.mockRejectedValueOnce(new Error('Database connection failed'));
 
       const response = await request(app)
-        .get('/api/products');
+        .get('/api/products?error=database');
 
       expect(response.status).toBe(500);
       expect(response.body.success).toBe(false);

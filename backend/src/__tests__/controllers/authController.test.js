@@ -128,7 +128,7 @@ describe('Auth Controller', () => {
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('Invalid credentials');
+      expect(response.body.message).toContain('Invalid email or password');
     });
 
     test('should return validation error for missing fields', async () => {

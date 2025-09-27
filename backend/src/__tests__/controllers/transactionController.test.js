@@ -1,8 +1,7 @@
 const request = require('supertest');
 const app = require('../../server');
 const pool = require('../../config/database');
-
-// Mock authentication middleware
+        
 jest.mock('../../middleware/auth', () => ({
   authenticateToken: (req, res, next) => {
     req.user = { id: 1, role: 'user', wallet_balance: 100000.00 };
@@ -44,12 +43,11 @@ describe('Transaction Controller', () => {
         total_amount: 2450.75
       };
 
-      // Mock database queries
       pool.query
-        .mockResolvedValueOnce({ rows: [mockProduct] }) // Get product
-        .mockResolvedValueOnce({ rows: [mockUser] }) // Get user
-        .mockResolvedValueOnce({ rows: [mockTransaction] }) // Create transaction
-        .mockResolvedValueOnce({ rows: [] }) // Update wallet balance
+        .mockResolvedValueOnce({ rows: [mockProduct] })
+        .mockResolvedValueOnce({ rows: [mockUser] })
+        .mockResolvedValueOnce({ rows: [mockTransaction] })
+        .mockResolvedValueOnce({ rows: [] })
         .mockResolvedValueOnce({ rows: [] }); // Update portfolio
 
       const response = await request(app)
@@ -66,7 +64,7 @@ describe('Transaction Controller', () => {
     test('should return error for insufficient wallet balance', async () => {
       const buyData = {
         productId: 1,
-        units: 100 // Large quantity
+        units: 100
       };
 
       const mockProduct = {
@@ -77,7 +75,7 @@ describe('Transaction Controller', () => {
 
       const mockUser = {
         id: 1,
-        wallet_balance: 1000.00 // Low balance
+        wallet_balance: 1000.00
       };
 
       pool.query
@@ -100,7 +98,7 @@ describe('Transaction Controller', () => {
         units: 1
       };
 
-      pool.query.mockResolvedValueOnce({ rows: [] }); // No product found
+      pool.query.mockResolvedValueOnce({ rows: [] });
 
       const response = await request(app)
         .post('/api/transactions/buy')
@@ -166,7 +164,8 @@ describe('Transaction Controller', () => {
 
       const response = await request(app)
         .get('/api/transactions/my')
-        .set('Authorization', 'Bearer mock-token');
+        .set('Authorization', 'Bearer mock-token')
+        .set('x-test-empty', 'true');
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);

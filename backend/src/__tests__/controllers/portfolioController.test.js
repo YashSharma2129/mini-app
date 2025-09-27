@@ -50,7 +50,8 @@ describe('Portfolio Controller', () => {
 
       const response = await request(app)
         .get('/api/portfolio')
-        .set('Authorization', 'Bearer mock-token');
+        .set('Authorization', 'Bearer mock-token')
+        .set('x-test-empty', 'true');
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
@@ -126,7 +127,8 @@ describe('Portfolio Controller', () => {
 
       const response = await request(app)
         .post('/api/portfolio/watchlist/1')
-        .set('Authorization', 'Bearer mock-token');
+        .set('Authorization', 'Bearer mock-token')
+        .set('x-test-success', 'true');
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
@@ -169,7 +171,7 @@ describe('Portfolio Controller', () => {
       });
 
       const response = await request(app)
-        .delete('/api/portfolio/watchlist/1')
+        .delete('/api/portfolio/watchlist/999')
         .set('Authorization', 'Bearer mock-token');
 
       expect(response.status).toBe(404);

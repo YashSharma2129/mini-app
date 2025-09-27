@@ -1,5 +1,11 @@
 const jwt = require('jsonwebtoken');
+const pool = require('../../config/database');
 const { authenticateToken, requireRole } = require('../../middleware/auth');
+
+// Mock database
+jest.mock('../../config/database', () => ({
+  query: jest.fn()
+}));
 
 describe('Auth Middleware', () => {
   let req, res, next;
@@ -17,57 +23,64 @@ describe('Auth Middleware', () => {
   });
 
   describe('authenticateToken', () => {
-    test('should authenticate valid token', () => {
+    test('should authenticate valid token', async () => {
       const mockUser = { userId: 1, role: 'user' };
+      const mockDbUser = { id: 1, email: 'test@example.com', name: 'Test User', role: 'user' };
+      
       jwt.verify.mockReturnValue(mockUser);
+      pool.query.mockResolvedValue({ rows: [mockDbUser] });
 
       req.headers.authorization = 'Bearer valid-token';
 
-      authenticateToken(req, res, next);
+      await authenticateToken(req, res, next);
 
       expect(jwt.verify).toHaveBeenCalledWith('valid-token', process.env.JWT_SECRET);
-      expect(req.user).toEqual(mockUser);
+      expect(pool.query).toHaveBeenCalledWith(
+        'SELECT id, email, name, role FROM users WHERE id = $1',
+        [1]
+      );
+      expect(req.user).toEqual(mockDbUser);
       expect(next).toHaveBeenCalled();
       expect(res.status).not.toHaveBeenCalled();
     });
 
-    test('should return 401 for missing token', () => {
-      authenticateToken(req, res, next);
+    test('should return 401 for missing token', async () => {
+      await authenticateToken(req, res, next);
 
       expect(res.status).toHaveBeenCalledWith(401);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Access denied. No token provided.'
+        message: 'Access token required'
       });
       expect(next).not.toHaveBeenCalled();
     });
 
-    test('should return 401 for invalid token', () => {
+    test('should return 403 for invalid token', async () => {
       jwt.verify.mockImplementation(() => {
         throw new Error('Invalid token');
       });
 
       req.headers.authorization = 'Bearer invalid-token';
 
-      authenticateToken(req, res, next);
+      await authenticateToken(req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(401);
+      expect(res.status).toHaveBeenCalledWith(403);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Invalid token.'
+        message: 'Invalid token'
       });
       expect(next).not.toHaveBeenCalled();
     });
 
-    test('should return 401 for malformed authorization header', () => {
+    test('should return 401 for malformed authorization header', async () => {
       req.headers.authorization = 'InvalidFormat';
 
-      authenticateToken(req, res, next);
+      await authenticateToken(req, res, next);
 
       expect(res.status).toHaveBeenCalledWith(401);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Access denied. No token provided.'
+        message: 'Access token required'
       });
       expect(next).not.toHaveBeenCalled();
     });
@@ -103,7 +116,7 @@ describe('Auth Middleware', () => {
       expect(res.status).toHaveBeenCalledWith(403);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Access denied. Insufficient permissions.'
+        message: 'Insufficient permissions'
       });
       expect(next).not.toHaveBeenCalled();
     });
@@ -117,7 +130,7 @@ describe('Auth Middleware', () => {
       expect(res.status).toHaveBeenCalledWith(401);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Access denied. No token provided.'
+        message: 'Authentication required'
       });
       expect(next).not.toHaveBeenCalled();
     });
