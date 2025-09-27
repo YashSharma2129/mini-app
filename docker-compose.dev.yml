@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Development
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: trading-app-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: trading_app_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./backend/src/scripts/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    networks:
+      - trading-network-dev
+
+  # Redis Cache for Development
+  redis-dev:
+    image: redis:7-alpine
+    container_name: trading-app-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - trading-network-dev
+
+volumes:
+  postgres_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+
+networks:
+  trading-network-dev:
+    driver: bridge
