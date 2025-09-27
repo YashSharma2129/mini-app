@@ -1,0 +1,234 @@
+name: 🔒 Security Scan
+
+on:
+  schedule:
+    - cron: '0 2 * * 1' # Weekly security scans
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'package*.json'
+      - '**/package*.json'
+
+jobs:
+  dependency-check:
+    name: 🔍 Dependency Security Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          backend/package-lock.json
+          frontend/package-lock.json
+
+    - name: 🔧 Install backend dependencies
+      working-directory: ./backend
+      run: npm ci
+
+    - name: 🔧 Install frontend dependencies
+      working-directory: ./frontend
+      run: npm ci
+
+    - name: 🛡️ NPM Audit Backend
+      working-directory: ./backend
+      run: |
+        npm audit --audit-level moderate --json > audit-backend.json
+        npm audit --audit-level moderate
+
+    - name: 🛡️ NPM Audit Frontend
+      working-directory: ./frontend
+      run: |
+        npm audit --audit-level moderate --json > audit-frontend.json
+        npm audit --audit-level moderate
+
+    - name: 📊 Upload Audit Reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-audit-reports
+        path: |
+          backend/audit-backend.json
+          frontend/audit-frontend.json
+
+  container-scan:
+    name: 🐳 Container Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🔍 Trivy Filesystem Scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-fs-results.sarif'
+        severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+
+    - name: 🔍 Trivy Repository Scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'repo'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-repo-results.sarif'
+        severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+
+    - name: 📊 Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-fs-results.sarif'
+
+    - name: 📊 Upload Repository scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-repo-results.sarif'
+
+  codeql:
+    name: 🔐 CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript' ]
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🔐 Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+
+    - name: 🔐 Autobuild
+      uses: github/codeql-action/autobuild@v3
+
+    - name: 🔐 Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
+
+  secret-scan:
+    name: 🔑 Secret Scanning
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🔑 TruffleHog Secret Scan
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: main
+        head: HEAD
+        extra_args: --debug --only-verified
+
+  dockerfile-scan:
+    name: 🐳 Dockerfile Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🔍 Hadolint Dockerfile Lint
+      uses: hadolint/hadolint-action@v3.1.0
+      with:
+        dockerfile: backend/Dockerfile
+        format: sarif
+        output-file: hadolint-backend.sarif
+
+    - name: 🔍 Hadolint Frontend Dockerfile Lint
+      uses: hadolint/hadolint-action@v3.1.0
+      with:
+        dockerfile: frontend/Dockerfile
+        format: sarif
+        output-file: hadolint-frontend.sarif
+
+    - name: 📊 Upload Hadolint results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: hadolint-backend.sarif
+
+    - name: 📊 Upload Frontend Hadolint results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: hadolint-frontend.sarif
+
+  license-check:
+    name: 📄 License Compliance Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          backend/package-lock.json
+          frontend/package-lock.json
+
+    - name: 🔧 Install dependencies
+      run: |
+        cd backend && npm ci
+        cd ../frontend && npm ci
+
+    - name: 📄 License Check Backend
+      working-directory: ./backend
+      run: |
+        npm install -g license-checker
+        license-checker --onlyAllow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC' --excludePrivatePackages
+
+    - name: 📄 License Check Frontend
+      working-directory: ./frontend
+      run: |
+        license-checker --onlyAllow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC' --excludePrivatePackages
+
+  security-summary:
+    name: 📋 Security Summary
+    runs-on: ubuntu-latest
+    needs: [dependency-check, container-scan, codeql, secret-scan, dockerfile-scan, license-check]
+    if: always()
+    
+    steps:
+    - name: 📋 Security Summary
+      run: |
+        echo "🔒 Security Scan Summary"
+        echo "========================"
+        echo "✅ Dependency Check: ${{ needs.dependency-check.result }}"
+        echo "✅ Container Scan: ${{ needs.container-scan.result }}"
+        echo "✅ CodeQL Analysis: ${{ needs.codeql.result }}"
+        echo "✅ Secret Scan: ${{ needs.secret-scan.result }}"
+        echo "✅ Dockerfile Scan: ${{ needs.dockerfile-scan.result }}"
+        echo "✅ License Check: ${{ needs.license-check.result }}"
+        
+        if [[ "${{ needs.dependency-check.result }}" == "failure" || 
+              "${{ needs.container-scan.result }}" == "failure" || 
+              "${{ needs.codeql.result }}" == "failure" || 
+              "${{ needs.secret-scan.result }}" == "failure" || 
+              "${{ needs.dockerfile-scan.result }}" == "failure" || 
+              "${{ needs.license-check.result }}" == "failure" ]]; then
+          echo "❌ Some security checks failed!"
+          exit 1
+        else
+          echo "✅ All security checks passed!"
+        fi

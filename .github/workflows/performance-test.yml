@@ -1,0 +1,249 @@
+name: ⚡ Performance Testing
+
+on:
+  workflow_dispatch:
+    inputs:
+      load_type:
+        description: 'Type of load test'
+        required: true
+        default: 'normal'
+        type: choice
+        options:
+        - light
+        - normal
+        - heavy
+        - stress
+  push:
+    branches: [ main, staging ]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/performance-test.yml'
+
+jobs:
+  lighthouse-audit:
+    name: 🏗️ Lighthouse Performance Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: 🔧 Install frontend dependencies
+      working-directory: ./frontend
+      run: npm ci
+
+    - name: 🏗️ Build frontend
+      working-directory: ./frontend
+      run: npm run build
+
+    - name: 🚀 Start frontend server
+      working-directory: ./frontend
+      run: |
+        npm run preview &
+        sleep 10
+
+    - name: 🔍 Run Lighthouse CI
+      uses: treosh/lighthouse-ci-action@v10
+      with:
+        configPath: './.lighthouserc.json'
+        uploadArtifacts: true
+        temporaryPublicStorage: true
+
+    - name: 📊 Upload Lighthouse Reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: lighthouse-reports
+        path: |
+          .lighthouseci/
+          lighthouse-report.json
+
+  load-test:
+    name: 🚀 Load Testing
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: trading_app_perf
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+
+    - name: 🔧 Install backend dependencies
+      working-directory: ./backend
+      run: npm ci
+
+    - name: 🗄️ Setup test database
+      working-directory: ./backend
+      env:
+        NODE_ENV: test
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_NAME: trading_app_perf
+        DB_USER: postgres
+        DB_PASSWORD: password
+        JWT_SECRET: test-secret
+        REDIS_URL: redis://localhost:6379
+      run: |
+        npm run seed
+
+    - name: 🚀 Start backend server
+      working-directory: ./backend
+      env:
+        NODE_ENV: test
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_NAME: trading_app_perf
+        DB_USER: postgres
+        DB_PASSWORD: password
+        JWT_SECRET: test-secret
+        REDIS_URL: redis://localhost:6379
+      run: |
+        npm start &
+        sleep 15
+
+    - name: ⚡ Run Artillery Load Tests
+      run: |
+        npm install -g artillery
+        case "${{ github.event.inputs.load_type || 'normal' }}" in
+          "light")
+            artillery run --config backend/artillery-light.yml backend/load-tests.yml
+            ;;
+          "normal")
+            artillery run --config backend/artillery.yml backend/load-tests.yml
+            ;;
+          "heavy")
+            artillery run --config backend/artillery-heavy.yml backend/load-tests.yml
+            ;;
+          "stress")
+            artillery run --config backend/artillery-stress.yml backend/load-tests.yml
+            ;;
+        esac
+
+    - name: 📊 Upload Load Test Reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: artillery-reports-${{ github.event.inputs.load_type || 'normal' }}
+        path: |
+          artillery-report.json
+          artillery-results.html
+
+  memory-leak-test:
+    name: 🧠 Memory Leak Testing
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: trading_app_memory
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+
+    - name: 🔧 Install backend dependencies
+      working-directory: ./backend
+      run: npm ci
+
+    - name: 🚀 Start backend with memory profiling
+      working-directory: ./backend
+      env:
+        NODE_ENV: test
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_NAME: trading_app_memory
+        DB_USER: postgres
+        DB_PASSWORD: password
+        JWT_SECRET: test-secret
+        REDIS_URL: redis://localhost:6379
+      run: |
+        node --inspect --max-old-space-size=512 src/server.js &
+        sleep 10
+
+    - name: 🧠 Run memory stress test
+      run: |
+        npm install -g artillery
+        artillery run --config backend/artillery-memory.yml backend/memory-tests.yml
+
+    - name: 📊 Generate memory report
+      run: |
+        # Generate memory usage report
+        echo "Memory usage report:" > memory-report.txt
+        ps aux | grep node >> memory-report.txt
+        echo "Heap usage:" >> memory-report.txt
+        curl -s http://localhost:9229/json | jq '.[0].title' >> memory-report.txt || echo "Inspector not available" >> memory-report.txt
+
+    - name: 📊 Upload Memory Reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: memory-reports
+        path: |
+          memory-report.txt
+          memory-*.heapsnapshot
+
+  performance-summary:
+    name: 📋 Performance Summary
+    runs-on: ubuntu-latest
+    needs: [lighthouse-audit, load-test, memory-leak-test]
+    if: always()
+    
+    steps:
+    - name: 📋 Performance Summary
+      run: |
+        echo "⚡ Performance Test Summary"
+        echo "=========================="
+        echo "✅ Lighthouse Audit: ${{ needs.lighthouse-audit.result }}"
+        echo "✅ Load Testing: ${{ needs.load-test.result }}"
+        echo "✅ Memory Leak Test: ${{ needs.memory-leak-test.result }}"
+        
+        if [[ "${{ needs.lighthouse-audit.result }}" == "failure" || 
+              "${{ needs.load-test.result }}" == "failure" || 
+              "${{ needs.memory-leak-test.result }}" == "failure" ]]; then
+          echo "❌ Some performance tests failed!"
+          exit 1
+        else
+          echo "✅ All performance tests passed!"
+        fi
