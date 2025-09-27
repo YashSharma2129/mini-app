@@ -53,8 +53,6 @@
     "eslint-plugin-security": "^1.7.1",
     "prettier": "^3.2.5",
     "jscpd": "^3.5.1",
-    "artillery": "^2.0.0",
-    "helmet": "^7.1.0",
-    "express-rate-limit": "^7.1.5"
+    "artillery": "^2.0.0"
   }
 }
