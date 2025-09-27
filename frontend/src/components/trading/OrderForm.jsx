@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -10,33 +10,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { toast } from '../../hooks/use-toast';
 import api from '../../utils/api';
 
-const schema = yup.object({
-  orderType: yup.string().required('Order type is required'),
-  quantity: yup
-    .number()
-    .transform((value, originalValue) => {
-      // Handle empty string as undefined
-      if (originalValue === '' || originalValue === null || originalValue === undefined) {
-        return undefined;
-      }
-      return value;
-    })
+const schema = z.object({
+  orderType: z.string().min(1, 'Order type is required'),
+  quantity: z
+    .number({ invalid_type_error: 'Quantity must be a number' })
     .positive('Quantity must be positive')
-    .min(0.01, 'Minimum quantity is 0.01')
-    .required('Quantity is required'),
-  orderPrice: yup
-    .number()
-    .transform((value, originalValue) => {
-      // Handle empty string as undefined for optional field
-      if (originalValue === '' || originalValue === null || originalValue === undefined) {
-        return undefined;
-      }
-      return value;
-    })
+    .min(0.01, 'Minimum quantity is 0.01'),
+  orderPrice: z
+    .number({ invalid_type_error: 'Price must be a number' })
     .positive('Price must be positive')
     .min(0.01, 'Minimum price is 0.01')
-    .nullable()
     .optional()
+    .nullable()
 });
 
 const OrderForm = ({ product, onOrderSuccess, onClose }) => {
@@ -50,7 +35,7 @@ const OrderForm = ({ product, onOrderSuccess, onClose }) => {
     formState: { errors },
     reset
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: zodResolver(schema),
     defaultValues: {
       orderType: 'buy',
       quantity: '',
@@ -175,24 +160,24 @@ const OrderForm = ({ product, onOrderSuccess, onClose }) => {
             {errors.orderPrice && (
               <p className="text-sm text-destructive">{errors.orderPrice.message}</p>
             )}
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Leave empty for market order at current price
             </p>
           </div>
 
           {/* Current Price Display */}
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <div className="flex justify-between text-sm">
+          <div className="bg-muted/50 p-3 rounded-lg">
+            <div className="flex justify-between text-sm text-foreground">
               <span>Current Price:</span>
               <span className="font-semibold">{formatCurrency(product?.price || 0)}</span>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-sm text-foreground">
               <span>Order Price:</span>
               <span className="font-semibold">
                 {formatCurrency(orderPrice || product?.price || 0)}
               </span>
             </div>
-            <div className="flex justify-between text-sm font-bold border-t pt-2 mt-2">
+            <div className="flex justify-between text-sm font-bold border-t border-border pt-2 mt-2 text-foreground">
               <span>Total Amount:</span>
               <span>{formatCurrency(calculateTotal())}</span>
             </div>

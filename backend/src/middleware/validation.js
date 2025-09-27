@@ -45,6 +45,11 @@ const schemas = {
   updateProfile: Joi.object({
     name: Joi.string().min(2).max(50),
     phone: Joi.string().pattern(/^[6-9]\d{9}$/)
+  }),
+
+  changePassword: Joi.object({
+    currentPassword: Joi.string().required(),
+    newPassword: Joi.string().min(6).required()
   })
 };
 

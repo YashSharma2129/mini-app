@@ -38,7 +38,7 @@ const Dashboard = () => {
       setPortfolioSummary(summaryResponse.data.data);
       setPortfolio(portfolioResponse.data.data.portfolio);
     } catch (error) {
-      console.error('Error fetching portfolio data:', error);
+      // Error handled by UI state
     } finally {
       setLoading(false);
     }

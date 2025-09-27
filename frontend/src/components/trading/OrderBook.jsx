@@ -19,7 +19,7 @@ const OrderBook = ({ userId }) => {
       const response = await api.get('/orders');
       setOrders(response.data.data);
     } catch (error) {
-      console.error('Failed to fetch orders:', error);
+      // Error handled by UI state
     } finally {
       setIsLoading(false);
     }

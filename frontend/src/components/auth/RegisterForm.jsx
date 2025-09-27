@@ -1,32 +1,31 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { useAuth } from '../../context/AuthContext';
 import { Eye, EyeOff, User, Mail, Lock } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Card, CardContent, CardHeader, CardFooter } from '../ui/card';
 
-const schema = yup.object({
-  name: yup
+const schema = z.object({
+  name: z
     .string()
     .min(2, 'Name must be at least 2 characters')
-    .max(50, 'Name must be less than 50 characters')
-    .required('Name is required'),
-  email: yup
+    .max(50, 'Name must be less than 50 characters'),
+  email: z
     .string()
-    .email('Invalid email format')
-    .required('Email is required'),
-  password: yup
+    .email('Invalid email format'),
+  password: z
     .string()
-    .min(6, 'Password must be at least 6 characters')
-    .required('Password is required'),
-  confirmPassword: yup
+    .min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z
     .string()
-    .oneOf([yup.ref('password'), null], 'Passwords must match')
-    .required('Please confirm your password'),
+    .min(6, 'Please confirm your password'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 const RegisterForm = () => {
@@ -40,7 +39,7 @@ const RegisterForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: zodResolver(schema),
   });
 
   const onSubmit = async (data) => {

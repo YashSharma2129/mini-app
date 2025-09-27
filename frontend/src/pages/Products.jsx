@@ -28,7 +28,7 @@ const Products = () => {
       const response = await productsAPI.getAllProducts();
       setProducts(response.data.data.products);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      // Error handled by UI state
     } finally {
       setLoading(false);
     }

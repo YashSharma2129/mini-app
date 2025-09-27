@@ -40,7 +40,7 @@ const Transactions = () => {
       setTransactions(transactionsResponse.data.data.transactions);
       setStats(statsResponse.data.data.stats);
     } catch (error) {
-      console.error('Error fetching transactions:', error);
+      // Error handled by UI state
     } finally {
       setLoading(false);
     }

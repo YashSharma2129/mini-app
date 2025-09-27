@@ -10,22 +10,31 @@ import {
   Edit,
   Save,
   X,
-  Camera
+  Camera,
+  Lock
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { toast } from '../hooks/use-toast';
+import api from '../utils/api';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
     phone: user?.phone || '',
     address: user?.address || '',
+  });
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
   });
 
   const handleInputChange = (e) => {
@@ -36,19 +45,68 @@ const Profile = () => {
     }));
   };
 
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const handleSave = async () => {
     try {
-      await api.put('/auth/profile', profileData);
-      toast({
-        title: 'Success',
-        description: 'Profile updated successfully!',
-      });
-      setIsEditing(false);
+      const response = await api.put('/auth/profile', formData);
+      if (response.data.success) {
+        updateUser(response.data.data.user);
+        toast({
+          title: 'Success',
+          description: 'Profile updated successfully!',
+        });
+        setIsEditing(false);
+      }
     } catch (error) {
-      console.error('Error updating profile:', error);
+      // Error handled by toast notification
       toast({
         title: 'Error',
-        description: 'Failed to update profile',
+        description: error.response?.data?.message || 'Failed to update profile',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handlePasswordSave = async () => {
+    try {
+      if (passwordData.newPassword !== passwordData.confirmPassword) {
+        toast({
+          title: 'Error',
+          description: 'New passwords do not match',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const response = await api.put('/auth/change-password', {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword
+      });
+
+      if (response.data.success) {
+        toast({
+          title: 'Success',
+          description: 'Password changed successfully!',
+        });
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+        setIsChangingPassword(false);
+      }
+    } catch (error) {
+      // Error handled by toast notification
+      toast({
+        title: 'Error',
+        description: error.response?.data?.message || 'Failed to change password',
         variant: 'destructive',
       });
     }
@@ -256,9 +314,68 @@ const Profile = () => {
                       <h3 className="text-sm font-medium text-gray-900">Change Password</h3>
                       <p className="text-sm text-gray-600">Update your account password</p>
                     </div>
-                    <Button variant="outline" size="sm">
-                      Change
-                    </Button>
+                    <Dialog open={isChangingPassword} onOpenChange={setIsChangingPassword}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Lock className="h-4 w-4 mr-2" />
+                          Change
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Change Password</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Current Password
+                            </label>
+                            <Input
+                              name="currentPassword"
+                              type="password"
+                              value={passwordData.currentPassword}
+                              onChange={handlePasswordChange}
+                              placeholder="Enter current password"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              New Password
+                            </label>
+                            <Input
+                              name="newPassword"
+                              type="password"
+                              value={passwordData.newPassword}
+                              onChange={handlePasswordChange}
+                              placeholder="Enter new password"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Confirm New Password
+                            </label>
+                            <Input
+                              name="confirmPassword"
+                              type="password"
+                              value={passwordData.confirmPassword}
+                              onChange={handlePasswordChange}
+                              placeholder="Confirm new password"
+                            />
+                          </div>
+                          <div className="flex justify-end space-x-2">
+                            <Button
+                              variant="outline"
+                              onClick={() => setIsChangingPassword(false)}
+                            >
+                              Cancel
+                            </Button>
+                            <Button onClick={handlePasswordSave}>
+                              Change Password
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                   
                   <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
@@ -266,8 +383,8 @@ const Profile = () => {
                       <h3 className="text-sm font-medium text-gray-900">Two-Factor Authentication</h3>
                       <p className="text-sm text-gray-600">Add an extra layer of security</p>
                     </div>
-                    <Button variant="outline" size="sm">
-                      Enable
+                    <Button variant="outline" size="sm" disabled>
+                      Coming Soon
                     </Button>
                   </div>
                 </div>

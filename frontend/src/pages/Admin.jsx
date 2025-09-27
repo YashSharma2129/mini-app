@@ -47,7 +47,7 @@ const Admin = () => {
       setRecentTransactions(statsResponse.data.data.recent_transactions);
       setTopProducts(statsResponse.data.data.top_products);
     } catch (error) {
-      console.error('Error fetching admin data:', error);
+      // Error handled by UI state
       toast({
         title: 'Error',
         description: 'Failed to load admin data',
@@ -77,7 +77,7 @@ const Admin = () => {
         });
       }
     } catch (error) {
-      console.error('Error performing user action:', error);
+      // Error handled by toast notification
       toast({
         title: 'Error',
         description: 'Failed to perform user action',

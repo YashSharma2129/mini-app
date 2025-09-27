@@ -46,7 +46,7 @@ const Portfolio = () => {
       setPortfolio(portfolioResponse.data.data.portfolio);
       setWatchlist(watchlistResponse.data.data.watchlist);
     } catch (error) {
-      console.error('Error fetching portfolio data:', error);
+      // Error handled by UI state
     } finally {
       setLoading(false);
     }

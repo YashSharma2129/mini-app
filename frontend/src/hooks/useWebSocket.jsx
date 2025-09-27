@@ -35,7 +35,7 @@ const useWebSocket = (url, options = {}) => {
       
       socket.on('connect', () => {
         if (import.meta.env.DEV) {
-          console.log('Socket.IO connected');
+          // Connected to WebSocket
         }
         setIsConnected(true);
         setReconnectAttempts(0);

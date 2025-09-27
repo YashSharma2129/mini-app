@@ -35,7 +35,7 @@ const Trading = () => {
       const response = await productsAPI.getAllProducts();
       setProducts(response.data.data.products || []);
     } catch (error) {
-      console.error('Failed to fetch products:', error);
+      // Error handled by UI state
       setProducts([]); // Set empty array on error
     }
   };
@@ -54,7 +54,7 @@ const Trading = () => {
         totalSellAmount: parseFloat(stats.total_sell_amount) || 0
       });
     } catch (error) {
-      console.error('Failed to fetch trading stats:', error);
+      // Error handled by UI state
       // Set default values on error
       setTradingStats({
         totalOrders: 0,

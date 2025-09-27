@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { transactionsAPI } from '../../utils/api';
 import { formatCurrency, formatNumber } from '../../utils/auth';
 import { X, ShoppingCart, Calculator, AlertCircle } from 'lucide-react';
@@ -10,17 +10,15 @@ import { Input } from '../ui/input';
 import { Card, CardContent, CardHeader, CardFooter } from '../ui/card';
 import { toast } from '../../hooks/use-toast';
 
-const schema = yup.object({
-  units: yup
-    .number()
+const createSchema = (walletBalance, pricePerUnit) => z.object({
+  units: z
+    .number({ invalid_type_error: 'Units must be a number' })
     .positive('Units must be positive')
     .min(0.01, 'Minimum units is 0.01')
-    .required('Units is required')
-    .test('max-units', 'Insufficient wallet balance', function(value) {
-      const { walletBalance, pricePerUnit } = this.parent;
+    .refine((value) => {
       const totalAmount = value * pricePerUnit;
       return totalAmount <= walletBalance;
-    })
+    }, 'Insufficient wallet balance')
 });
 
 const BuyProductModal = ({ product, user, isOpen, onClose, onSuccess }) => {
@@ -33,11 +31,9 @@ const BuyProductModal = ({ product, user, isOpen, onClose, onSuccess }) => {
     formState: { errors },
     reset
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: zodResolver(createSchema(user?.wallet_balance || 0, product?.price || 0)),
     defaultValues: {
-      units: 1,
-      walletBalance: user?.wallet_balance || 0,
-      pricePerUnit: product?.price || 0
+      units: 1
     }
   });
 

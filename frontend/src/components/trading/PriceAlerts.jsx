@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -13,14 +13,13 @@ import api from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import { Plus, Bell, Trash2, Edit } from 'lucide-react';
 
-const alertSchema = yup.object({
-  product_id: yup.string().required('Product is required'),
-  alert_type: yup.string().required('Alert type is required'),
-  target_value: yup
-    .number()
+const alertSchema = z.object({
+  product_id: z.string().min(1, 'Product is required'),
+  alert_type: z.string().min(1, 'Alert type is required'),
+  target_value: z
+    .number({ invalid_type_error: 'Target value must be a number' })
     .positive('Target value must be positive')
     .min(0.01, 'Minimum target value is 0.01')
-    .required('Target value is required')
 });
 
 const PriceAlerts = ({ products }) => {
@@ -36,7 +35,7 @@ const PriceAlerts = ({ products }) => {
     formState: { errors },
     reset
   } = useForm({
-    resolver: yupResolver(alertSchema),
+    resolver: zodResolver(alertSchema),
     defaultValues: {
       product_id: '',
       alert_type: 'price_above',

@@ -48,6 +48,36 @@ class User {
     return result.rows[0];
   }
 
+  static async changePassword(userId, currentPassword, newPassword) {
+    const bcrypt = require('bcryptjs');
+    
+    // First verify current password
+    const userQuery = 'SELECT password FROM users WHERE id = $1';
+    const userResult = await pool.query(userQuery, [userId]);
+    
+    if (userResult.rows.length === 0) {
+      throw new Error('User not found');
+    }
+    
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, userResult.rows[0].password);
+    if (!isCurrentPasswordValid) {
+      throw new Error('Current password is incorrect');
+    }
+    
+    // Hash new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    
+    // Update password
+    const updateQuery = `
+      UPDATE users 
+      SET password = $1
+      WHERE id = $2
+      RETURNING id, name, email, phone, role, wallet_balance
+    `;
+    const result = await pool.query(updateQuery, [hashedNewPassword, userId]);
+    return result.rows[0];
+  }
+
   static async getAllUsers() {
     const query = `
       SELECT id, name, email, role, wallet_balance, created_at

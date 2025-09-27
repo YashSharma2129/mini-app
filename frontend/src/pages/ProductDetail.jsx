@@ -42,7 +42,7 @@ const ProductDetail = () => {
       setProduct(response.data.data.product);
       setIsWatched(response.data.data.product.is_watched || false);
     } catch (error) {
-      console.error('Error fetching product:', error);
+      // Error handled by UI state
       toast({
         title: "Error",
         description: "Product not found",

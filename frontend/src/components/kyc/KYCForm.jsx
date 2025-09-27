@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { kycAPI } from '../../utils/api';
 import { validatePAN, validatePhone } from '../../utils/auth';
 import { Upload, FileText, User, Mail, Phone, MapPin } from 'lucide-react';
@@ -11,29 +11,24 @@ import { Input } from '../ui/input';
 import { Card, CardContent, CardHeader, CardFooter } from '../ui/card';
 import { toast } from '../../hooks/use-toast';
 
-const schema = yup.object({
-  name: yup
+const schema = z.object({
+  name: z
     .string()
     .min(2, 'Name must be at least 2 characters')
-    .max(50, 'Name must be less than 50 characters')
-    .required('Name is required'),
-  email: yup
+    .max(50, 'Name must be less than 50 characters'),
+  email: z
     .string()
-    .email('Invalid email format')
-    .required('Email is required'),
-  panNumber: yup
+    .email('Invalid email format'),
+  panNumber: z
     .string()
-    .test('pan-format', 'Invalid PAN format', validatePAN)
-    .required('PAN number is required'),
-  address: yup
+    .refine(validatePAN, 'Invalid PAN format'),
+  address: z
     .string()
     .min(10, 'Address must be at least 10 characters')
-    .max(200, 'Address must be less than 200 characters')
-    .required('Address is required'),
-  phone: yup
+    .max(200, 'Address must be less than 200 characters'),
+  phone: z
     .string()
-    .test('phone-format', 'Invalid phone number', validatePhone)
-    .required('Phone number is required'),
+    .refine(validatePhone, 'Invalid phone number'),
 });
 
 const KYCForm = () => {
@@ -46,7 +41,7 @@ const KYCForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: zodResolver(schema),
   });
 
   const handleFileChange = (event) => {

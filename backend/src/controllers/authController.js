@@ -141,9 +141,31 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+
+    const updatedUser = await User.changePassword(userId, currentPassword, newPassword);
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully',
+      data: { user: updatedUser }
+    });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(400).json({
+      success: false,
+      message: error.message || 'Failed to change password'
+    });
+  }
+};
+
 module.exports = {
   register: [validateRequest(schemas.register), register],
   login: [validateRequest(schemas.login), login],
   getProfile,
-  updateProfile: [validateRequest(schemas.updateProfile), updateProfile]
+  updateProfile: [validateRequest(schemas.updateProfile), updateProfile],
+  changePassword: [validateRequest(schemas.changePassword), changePassword]
 };
