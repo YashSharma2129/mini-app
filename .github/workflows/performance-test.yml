@@ -34,7 +34,6 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
 
     - name: 🔧 Install frontend dependencies
       working-directory: ./frontend
@@ -48,7 +47,20 @@ jobs:
       working-directory: ./frontend
       run: |
         npm run preview &
-        sleep 10
+        sleep 15
+        
+        # Wait for server to be ready
+        for i in {1..30}; do
+          if curl -f http://localhost:4173/ >/dev/null 2>&1; then
+            echo "✅ Frontend server is ready"
+            break
+          fi
+          echo "⏳ Waiting for frontend server... ($i/30)"
+          sleep 2
+        done
+        
+        # Verify server is running
+        curl -f http://localhost:4173/ || (echo "❌ Frontend server failed to start" && exit 1)
 
     - name: 🔍 Run Lighthouse CI
       uses: treosh/lighthouse-ci-action@v10
@@ -92,7 +104,7 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: backend/package-lock.json
+        cache-dependency-path: './backend/package-lock.json'
 
     - name: 🔧 Install backend dependencies
       working-directory: ./backend
@@ -181,7 +193,7 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: backend/package-lock.json
+        cache-dependency-path: './backend/package-lock.json'
 
     - name: 🔧 Install backend dependencies
       working-directory: ./backend
