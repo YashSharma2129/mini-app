@@ -9,6 +9,7 @@ import Footer from './components/layout/Footer.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import PWAInstallPrompt from './components/PWAInstallPrompt.jsx';
 import OfflineIndicator from './components/OfflineIndicator.jsx';
+import ScrollToTop from './components/ScrollToTop.jsx';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts.jsx';
 
 // Lazy load pages for better performance
@@ -84,6 +85,7 @@ const App = () => {
         <AuthProvider>
           <WebSocketProvider>
             <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <ScrollToTop />
               <div className="App">
                 <Toaster />
                 <PWAInstallPrompt />
