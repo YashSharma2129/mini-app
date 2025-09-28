@@ -27,12 +27,12 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? [
-          process.env.FRONTEND_URL,
-          /^https:\/\/mini-app-frontend.*\.vercel\.app$/
-        ].filter(Boolean)
-      : ['http://localhost:3000', 'http://localhost:3001'],
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://mini-app-frontend-silk.vercel.app',
+      'https://mini-app-frontend-git-main-yashsharma2129s-projects.vercel.app'
+    ],
     credentials: true
   }
 });
@@ -51,13 +51,33 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use(cors({  
-  origin: process.env.NODE_ENV === 'production' 
-    ? [
-        process.env.FRONTEND_URL,
-        /^https:\/\/mini-app-frontend.*\.vercel\.app$/
-      ].filter(Boolean)
-    : ['http://localhost:3000', 'http://localhost:3001'],
-  credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://mini-app-frontend-silk.vercel.app',
+      'https://mini-app-frontend-git-main-yashsharma2129s-projects.vercel.app'
+    ];
+    
+    // Add environment variable if set
+    if (process.env.FRONTEND_URL) {
+      allowedOrigins.push(process.env.FRONTEND_URL);
+    }
+    
+    // Check if origin is allowed
+    if (allowedOrigins.includes(origin) || origin.includes('mini-app-frontend') && origin.includes('vercel.app')) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json({ limit: '10mb' }));
