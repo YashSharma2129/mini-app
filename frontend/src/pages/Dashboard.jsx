@@ -5,14 +5,12 @@ import { portfolioAPI } from '../utils/api';
 import { formatCurrency, formatNumber, calculateReturns, getReturnsColor } from '../utils/auth';
 import { 
   TrendingUp, 
-  TrendingDown, 
   Wallet, 
-  PieChart,
   BarChart3,
   ArrowUpRight,
   ArrowDownRight
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardFooter } from '../components/ui/card';
+import { Card, CardContent, CardHeader } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';

@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "seed": "node src/scripts/seed.js",
+    "build": "npm run seed && npm start",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
