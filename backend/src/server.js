@@ -272,6 +272,30 @@ const initializeDatabase = async () => {
         )
       `);
 
+      // Create KYC table
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS kyc (
+          id SERIAL PRIMARY KEY,
+          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          full_name VARCHAR(255) NOT NULL,
+          date_of_birth DATE NOT NULL,
+          address TEXT NOT NULL,
+          city VARCHAR(100) NOT NULL,
+          state VARCHAR(100) NOT NULL,
+          pincode VARCHAR(10) NOT NULL,
+          pan_number VARCHAR(10) UNIQUE NOT NULL,
+          aadhar_number VARCHAR(12) UNIQUE NOT NULL,
+          bank_account_number VARCHAR(20) NOT NULL,
+          ifsc_code VARCHAR(11) NOT NULL,
+          documents JSONB,
+          status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+          reviewed_by INTEGER REFERENCES users(id),
+          reviewed_at TIMESTAMP,
+          created_at TIMESTAMP DEFAULT NOW(),
+          updated_at TIMESTAMP DEFAULT NOW()
+        )
+      `);
+
       console.log('✅ Database tables created successfully');
       return false; // Tables were created, need to seed data
     } else {

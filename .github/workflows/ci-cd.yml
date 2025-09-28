@@ -344,7 +344,6 @@ jobs:
         name: performance-reports-${{ github.run_id }}
         path: |
           artillery-report.json
-          lighthouse-report.json
 
   # ==========================================
   # ACCESSIBILITY TESTING
