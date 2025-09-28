@@ -22,7 +22,7 @@ export const WebSocketProvider = ({ children }) => {
     sendMessage,
     reconnectAttempts
   } = useWebSocket(
-    import.meta.env.VITE_WS_URL || 'http://localhost:5001',
+    import.meta.env.VITE_WS_URL || 'https://mini-app-ts9c.onrender.com',
     {
       onOpen: () => {
         if (import.meta.env.DEV) {
