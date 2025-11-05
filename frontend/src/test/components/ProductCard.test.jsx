@@ -3,21 +3,22 @@ import { BrowserRouter } from 'react-router-dom'
 import ProductCard from '../../components/products/ProductCard'
 import { AuthProvider } from '../../context/AuthContext'
 import { mockProducts } from '../__mocks__/api'
+import { describe, test, beforeEach, expect, vi } from 'vitest'
 
 // Mock the API
-jest.mock('../../utils/api', () => ({
+vi.mock('../../utils/api', () => ({
   portfolioAPI: {
-    addToWatchlist: jest.fn(() => Promise.resolve()),
-    removeFromWatchlist: jest.fn(() => Promise.resolve())
+    addToWatchlist: vi.fn(() => Promise.resolve()),
+    removeFromWatchlist: vi.fn(() => Promise.resolve())
   }
 }))
 
 // Mock Sonner toast
-jest.mock('sonner', () => ({
+vi.mock('sonner', () => ({
   toast: {
-    success: jest.fn(),
-    error: jest.fn(),
-    info: jest.fn()
+    success: vi.fn(),
+    error: vi.fn(),
+            info: vi.fn()
   }
 }))
 
@@ -35,16 +36,16 @@ describe('ProductCard', () => {
   const mockProduct = mockProducts[0]
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   test('renders product information correctly', () => {
     renderWithProviders(<ProductCard product={mockProduct} />)
     
-    expect(screen.getByText('Reliance Industries Ltd')).toBeInTheDocument()
-    expect(screen.getByText('Leading Indian conglomerate')).toBeInTheDocument()
-    expect(screen.getByText('₹2,450.75')).toBeInTheDocument()
-    expect(screen.getByText('Stocks')).toBeInTheDocument()
+    expect(screen.getByText('Apple Inc.')).toBeInTheDocument()
+    expect(screen.getByText('Leading technology company')).toBeInTheDocument()
+    expect(screen.getByText('₹150.00')).toBeInTheDocument()
+    expect(screen.getByText('Technology')).toBeInTheDocument()
   })
 
   test('displays price change indicator', () => {

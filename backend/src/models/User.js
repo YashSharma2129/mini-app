@@ -1,96 +1,139 @@
-const pool = require('../config/database');
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-
-class User {
-  static async create(userData) {
-    const { name, email, password, role = 'user' } = userData;
-    const hashedPassword = await bcrypt.hash(password, 12);
-    
-    const query = `
-      INSERT INTO users (name, email, password, role, wallet_balance, created_at)
-      VALUES ($1, $2, $3, $4, $5, NOW())
-      RETURNING id, name, email, role, wallet_balance, created_at
-    `;
-    
-    const values = [name, email, hashedPassword, role, 100000]; // Seed with ₹100,000
-    
-    const result = await pool.query(query, values);
-    return result.rows[0];
+  
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 100
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true,
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6
+  },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
+  },
+  wallet_balance: {
+    type: Number,
+    default: 100000,
+    min: 0
+  },
+  phone: {
+    type: String,
+    trim: true,
+    match: [/^[0-9]{10}$/, 'Please enter a valid 10-digit phone number']
+  },
+  is_active: {
+    type: Boolean,
+    default: true
+  },
+  last_login: {
+    type: Date
   }
-
-  static async findByEmail(email) {
-    const query = 'SELECT * FROM users WHERE email = $1';
-    const result = await pool.query(query, [email]);
-    return result.rows[0];
-  }
-
-  static async findById(id) {
-    const query = 'SELECT id, name, email, role, wallet_balance, created_at FROM users WHERE id = $1';
-    const result = await pool.query(query, [id]);
-    return result.rows[0];
-  }
-
-  static async updateWalletBalance(userId, newBalance) {
-    const query = 'UPDATE users SET wallet_balance = $1 WHERE id = $2 RETURNING wallet_balance';
-    const result = await pool.query(query, [newBalance, userId]);
-    return result.rows[0];
-  }
-
-  static async updateProfile(userId, updateData) {
-    const { name, phone } = updateData;
-    const query = `
-      UPDATE users 
-      SET name = COALESCE($1, name), phone = COALESCE($2, phone)
-      WHERE id = $3
-      RETURNING id, name, email, phone, role, wallet_balance
-    `;
-    const result = await pool.query(query, [name, phone, userId]);
-    return result.rows[0];
-  }
-
-  static async changePassword(userId, currentPassword, newPassword) {
-    const bcrypt = require('bcryptjs');
-    
-    // First verify current password
-    const userQuery = 'SELECT password FROM users WHERE id = $1';
-    const userResult = await pool.query(userQuery, [userId]);
-    
-    if (userResult.rows.length === 0) {
-      throw new Error('User not found');
+}, {
+  timestamps: true, 
+  toJSON: {
+    transform: function(doc, ret) {
+      delete ret.password;
+      delete ret.__v;
+      return ret;
     }
-    
-    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, userResult.rows[0].password);
-    if (!isCurrentPasswordValid) {
-      throw new Error('Current password is incorrect');
+  }
+});
+
+userSchema.index({ email: 1 });
+userSchema.index({ role: 1 });
+
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  
+  try {
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+userSchema.methods.verifyPassword = async function(plainPassword) {
+  return await bcrypt.compare(plainPassword, this.password);
+};
+
+userSchema.statics.createUser = async function(userData) {
+  const user = new this(userData);
+  await user.save();
+  return user;
+};
+
+userSchema.statics.findByEmail = function(email) {
+  return this.findOne({ email: email.toLowerCase() });
+};
+
+userSchema.statics.findByIdSafe = function(id) {
+  return this.findById(id).select('-password');
+};
+
+userSchema.statics.updateWalletBalance = async function(userId, newBalance) {
+  return this.findByIdAndUpdate(
+    userId,
+    { wallet_balance: newBalance },
+    { new: true, select: 'wallet_balance' }
+  );
+};
+
+userSchema.statics.updateProfile = async function(userId, updateData) {
+  const allowedUpdates = ['name', 'phone'];
+  const updates = {};
+  
+  Object.keys(updateData).forEach(key => {
+    if (allowedUpdates.includes(key) && updateData[key] !== undefined) {
+      updates[key] = updateData[key];
     }
-    
-    // Hash new password
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-    
-    // Update password
-    const updateQuery = `
-      UPDATE users 
-      SET password = $1
-      WHERE id = $2
-      RETURNING id, name, email, phone, role, wallet_balance
-    `;
-    const result = await pool.query(updateQuery, [hashedNewPassword, userId]);
-    return result.rows[0];
-  }
+  });
+  
+  return this.findByIdAndUpdate(
+    userId,
+    updates,
+    { new: true, select: 'name email phone role wallet_balance' }
+  );
+};
 
-  static async getAllUsers() {
-    const query = `
-      SELECT id, name, email, role, wallet_balance, created_at
-      FROM users
-      ORDER BY created_at DESC
-    `;
-    const result = await pool.query(query);
-    return result.rows;
+userSchema.statics.changePassword = async function(userId, currentPassword, newPassword) {
+  const user = await this.findById(userId);
+  if (!user) {
+    throw new Error('User not found');
   }
+  
+  const isCurrentPasswordValid = await user.verifyPassword(currentPassword);
+  if (!isCurrentPasswordValid) {
+    throw new Error('Current password is incorrect');
+  }
+  
+  user.password = newPassword;
+  await user.save();
+  
+  return this.findById(userId).select('name email phone role wallet_balance');
+};
 
-  static async verifyPassword(plainPassword, hashedPassword) {
-    return await bcrypt.compare(plainPassword, hashedPassword);
-  }
-}
+userSchema.statics.getAllUsers = function() {
+  return this.find({}, 'name email role wallet_balance createdAt')
+    .sort({ createdAt: -1 });
+};
+
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;

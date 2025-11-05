@@ -2,23 +2,33 @@
 export const mockProducts = [
   {
     id: 1,
-    name: 'Reliance Industries Ltd',
-    category: 'Stocks',
-    price: 2450.75,
-    description: 'Leading Indian conglomerate',
+    name: 'Apple Inc.',
+    category: 'Technology',
+    price: 150.00,
+    description: 'Leading technology company',
     pe_ratio: 18.5,
     market_cap: 16500000000000,
     volume: 2500000
   },
   {
     id: 2,
-    name: 'TCS',
-    category: 'Stocks',
-    price: 3850.25,
-    description: 'Global IT services',
+    name: 'Google LLC',
+    category: 'Technology',
+    price: 2800.25,
+    description: 'Global technology company',
     pe_ratio: 25.8,
     market_cap: 14000000000000,
     volume: 1800000
+  },
+  {
+    id: 3,
+    name: 'Microsoft Corporation',
+    category: 'Technology',
+    price: 350.75,
+    description: 'Software and cloud services',
+    pe_ratio: 22.3,
+    market_cap: 12000000000000,
+    volume: 1500000
   }
 ]
 
@@ -35,25 +45,25 @@ export const mockPortfolio = [
   {
     id: 1,
     product_id: 1,
-    product_name: 'Reliance Industries Ltd',
+    product_name: 'Apple Inc.',
     quantity: 10,
-    average_price: 2400,
-    current_price: 2450.75,
-    total_invested: 24000,
-    current_value: 24507.5,
-    returns: 507.5,
-    returns_percentage: 2.11
+    average_price: 140,
+    current_price: 150.00,
+    total_invested: 1400,
+    current_value: 1500,
+    returns: 100,
+    returns_percentage: 7.14
   }
 ]
 
 export const mockTransactions = [
   {
     id: 1,
-    product_name: 'Reliance Industries Ltd',
+    product_name: 'Apple Inc.',
     type: 'buy',
     units: 10,
-    price_per_unit: 2400,
-    total_amount: 24000,
+    price_per_unit: 140,
+    total_amount: 1400,
     created_at: '2024-01-15T10:30:00Z'
   }
 ]
@@ -74,10 +84,10 @@ export const mockApi = {
     getPortfolioSummary: () => Promise.resolve({ 
       data: { 
         data: { 
-          total_invested: 24000, 
-          current_value: 24507.5, 
-          total_returns: 507.5, 
-          returns_percentage: 2.11 
+          total_invested: 1400, 
+          current_value: 1500, 
+          total_returns: 100, 
+          returns_percentage: 7.14 
         } 
       } 
     })

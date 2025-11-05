@@ -1,16 +1,18 @@
+import { describe, test, beforeEach, expect, vi } from 'vitest'
+
 // Mock axios
 const mockAxios = {
-  get: jest.fn(),
-  post: jest.fn(),
-  put: jest.fn(),
-  delete: jest.fn(),
+  get: vi.fn(),
+  post: vi.fn(),
+  put: vi.fn(),
+  delete: vi.fn(),
   interceptors: {
-    request: { use: jest.fn() },
-    response: { use: jest.fn() }
+    request: { use: vi.fn() },
+    response: { use: vi.fn() }
   }
 }
 
-jest.mock('axios', () => ({
+vi.mock('axios', () => ({
   default: {
     create: () => mockAxios,
     get: mockAxios.get,
@@ -20,15 +22,15 @@ jest.mock('axios', () => ({
   }
 }))
 
-jest.mock('../../utils/api.jsx', () => {
+vi.mock('../../utils/api.jsx', () => {
   const mockAxios = {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
     interceptors: {
-      request: { use: jest.fn() },
-      response: { use: jest.fn() }
+      request: { use: vi.fn() },
+      response: { use: vi.fn() }
     }
   }
 
@@ -64,10 +66,10 @@ jest.mock('../../utils/api.jsx', () => {
 })
 
 const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn()
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn()
 }
 global.localStorage = localStorageMock
 
@@ -111,7 +113,7 @@ const transactionsAPI = {
 
 describe('API Integration Tests', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     localStorageMock.getItem.mockReturnValue(null)
   })
 

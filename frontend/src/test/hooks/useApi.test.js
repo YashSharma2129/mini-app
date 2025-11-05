@@ -1,13 +1,14 @@
 import { renderHook, waitFor, act } from '@testing-library/react'
+import { describe, test, beforeEach, expect, vi } from 'vitest'
 import useApi from '../../hooks/useApi'
 
 describe('useApi', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   test('should execute API call immediately when immediate is true', async () => {
-    const mockApiCall = jest.fn().mockResolvedValue({ data: 'test' })
+    const mockApiCall = vi.fn().mockResolvedValue({ data: 'test' })
 
     const { result } = renderHook(() => useApi(mockApiCall, { immediate: true }))
 
@@ -21,7 +22,7 @@ describe('useApi', () => {
   })
 
   test('should not execute API call when immediate is false', () => {
-    const mockApiCall = jest.fn().mockResolvedValue({ data: 'test' })
+    const mockApiCall = vi.fn().mockResolvedValue({ data: 'test' })
 
     const { result } = renderHook(() => useApi(mockApiCall, { immediate: false }))
 
@@ -31,7 +32,7 @@ describe('useApi', () => {
 
   test.skip('should handle API errors', async () => {
     const mockError = new Error('API Error')
-    const mockApiCall = jest.fn().mockRejectedValue(mockError)
+    const mockApiCall = vi.fn().mockRejectedValue(mockError)
 
     const { result } = renderHook(() => useApi(mockApiCall, { immediate: true }))
 
@@ -41,7 +42,7 @@ describe('useApi', () => {
   })
 
   test('should cache results when cacheKey is provided', async () => {
-    const mockApiCall = jest.fn().mockResolvedValue({ data: 'cached' })
+    const mockApiCall = vi.fn().mockResolvedValue({ data: 'cached' })
 
     const { result, rerender } = renderHook(
       ({ cacheKey }) => useApi(mockApiCall, { immediate: true, cacheKey }),
@@ -58,7 +59,7 @@ describe('useApi', () => {
   })
 
   test.skip('should retry on failure', async () => {
-    const mockApiCall = jest.fn()
+    const mockApiCall = vi.fn()
       .mockRejectedValueOnce(new Error('First failure'))
       .mockRejectedValueOnce(new Error('Second failure'))
       .mockResolvedValue({ data: 'success' })
@@ -75,7 +76,7 @@ describe('useApi', () => {
   })
 
   test('should provide refetch function', async () => {
-    const mockApiCall = jest.fn().mockResolvedValue({ data: 'test' })
+    const mockApiCall = vi.fn().mockResolvedValue({ data: 'test' })
 
     const { result } = renderHook(() => useApi(mockApiCall, { immediate: false }))
 
@@ -90,7 +91,7 @@ describe('useApi', () => {
   })
 
   test('should clear cache when clearCache is called', async () => {
-    const mockApiCall = jest.fn().mockResolvedValue({ data: 'test' })
+    const mockApiCall = vi.fn().mockResolvedValue({ data: 'test' })
 
     const { result } = renderHook(() =>
       useApi(mockApiCall, { immediate: true, cacheKey: 'test-cache' })

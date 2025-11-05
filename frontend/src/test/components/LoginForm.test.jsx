@@ -1,27 +1,31 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
+import { describe, test, beforeEach, expect, vi } from 'vitest'
 import LoginForm from '../../components/auth/LoginForm'
 import { AuthProvider } from '../../context/AuthContext'
 
-jest.mock('../../utils/api', () => ({
+vi.mock('../../utils/api', () => ({
   authAPI: {
-    login: jest.fn()
+    login: vi.fn()
   }
 }))
 
-jest.mock('sonner', () => ({
+vi.mock('sonner', () => ({
   toast: {
-    success: jest.fn(),
-    error: jest.fn(),
-    info: jest.fn()
+    success: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn()
   }
 }))
 
-const mockNavigate = jest.fn()
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate
-}))
+const mockNavigate = vi.fn()
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom')
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate
+  }
+})
 
 const renderWithProviders = (component) => {
   return render(
@@ -35,7 +39,7 @@ const renderWithProviders = (component) => {
 
 describe('LoginForm', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   test('renders login form correctly', () => {
@@ -97,7 +101,7 @@ describe('LoginForm', () => {
   })
 
   test('handles successful login', async () => {
-    const mockLogin = jest.fn().mockResolvedValue({
+    const mockLogin = vi.fn().mockResolvedValue({
       data: {
         data: {
           user: { id: 1, name: 'Test User' },
@@ -106,7 +110,7 @@ describe('LoginForm', () => {
       }
     })
     
-    jest.mocked(require('../../utils/api').authAPI.login).mockImplementation(mockLogin)
+    vi.mocked(await import('../../utils/api')).authAPI.login.mockImplementation(mockLogin)
     
     renderWithProviders(<LoginForm />)
     
@@ -131,9 +135,9 @@ describe('LoginForm', () => {
   })
 
   test('handles login error', async () => {
-    const mockLogin = jest.fn().mockRejectedValue(new Error('Invalid credentials'))
+    const mockLogin = vi.fn().mockRejectedValue(new Error('Invalid credentials'))
     
-    jest.mocked(require('../../utils/api').authAPI.login).mockImplementation(mockLogin)
+    vi.mocked(await import('../../utils/api')).authAPI.login.mockImplementation(mockLogin)
     
     renderWithProviders(<LoginForm />)
     
@@ -172,11 +176,11 @@ describe('LoginForm', () => {
   })
 
   test('shows loading state during login', async () => {
-    const mockLogin = jest.fn().mockImplementation(() => 
+    const mockLogin = vi.fn().mockImplementation(() => 
       new Promise(resolve => setTimeout(resolve, 100))
     )
     
-    jest.mocked(require('../../utils/api').authAPI.login).mockImplementation(mockLogin)
+    vi.mocked(await import('../../utils/api')).authAPI.login.mockImplementation(mockLogin)
     
     renderWithProviders(<LoginForm />)
     

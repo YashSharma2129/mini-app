@@ -49,7 +49,7 @@ const createTables = async () => {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS products (
       id SERIAL PRIMARY KEY,
-      name VARCHAR(200) NOT NULL,
+      name VARCHAR(200) UNIQUE NOT NULL,
       category VARCHAR(100) NOT NULL,
       price DECIMAL(10,2) NOT NULL,
       description TEXT,
@@ -97,6 +97,46 @@ const createTables = async () => {
       product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
       created_at TIMESTAMP DEFAULT NOW(),
       UNIQUE(user_id, product_id)
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS portfolio (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+      quantity DECIMAL(15,4) NOT NULL DEFAULT 0,
+      average_price DECIMAL(10,2) NOT NULL DEFAULT 0,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW(),
+      UNIQUE(user_id, product_id)
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      type VARCHAR(50) NOT NULL,
+      title VARCHAR(200) NOT NULL,
+      message TEXT NOT NULL,
+      data JSONB,
+      is_read BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS audit_logs (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      action VARCHAR(100) NOT NULL,
+      resource VARCHAR(100) NOT NULL,
+      resource_id INTEGER,
+      details JSONB,
+      ip_address INET,
+      user_agent TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
     )
   `);
 
@@ -213,11 +253,29 @@ const seedProducts = async () => {
   ];
 
   for (const product of products) {
-    await pool.query(`
-      INSERT INTO products (name, category, price, description, pe_ratio, market_cap, volume)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-      ON CONFLICT DO NOTHING
-    `, [product.name, product.category, product.price, product.description, product.pe_ratio, product.market_cap, product.volume]);
+    // Check if product already exists
+    const existingProduct = await pool.query('SELECT id FROM products WHERE name = $1', [product.name]);
+    
+    if (existingProduct.rows.length === 0) {
+      await pool.query(`
+        INSERT INTO products (name, symbol, category, current_price, description, pe_ratio, market_cap, volume, risk_level, is_active)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      `, [
+        product.name, 
+        product.name.replace(/\s+/g, '').substring(0, 10), // Generate symbol from name
+        product.category, 
+        product.price, 
+        product.description, 
+        product.pe_ratio, 
+        product.market_cap, 
+        product.volume,
+        'Medium', // Default risk level
+        true // Default active status
+      ]);
+      console.log(`  ✅ Added product: ${product.name}`);
+    } else {
+      console.log(`  ⏭️  Product already exists: ${product.name}`);
+    }
   }
 
   console.log('✅ Products seeded successfully!');
@@ -226,34 +284,40 @@ const seedProducts = async () => {
 const seedPortfolio = async () => {
   console.log('💼 Seeding portfolio...');
 
+  // Get actual user IDs from database
+  const usersResult = await pool.query('SELECT id FROM users ORDER BY id');
+  const userIds = usersResult.rows.map(row => row.id);
+  
+  console.log(`  📋 Found users: ${userIds.join(', ')}`);
+
   const portfolioData = [
     {
-      user_id: 1,
-      product_id: 1,
+      user_id: userIds[0], // Admin user
+      product_id: 5, // Reliance Industries
       quantity: 5.0,
       average_price: 2450.75
     },
     {
-      user_id: 1,
-      product_id: 2,
+      user_id: userIds[0], // Admin user
+      product_id: 6, // TCS
       quantity: 2.0,
       average_price: 3850.25
     },
     {
-      user_id: 2,
-      product_id: 3,
+      user_id: userIds[1], // John Doe
+      product_id: 7, // HDFC Bank
       quantity: 10.0,
       average_price: 1650.50
     },
     {
-      user_id: 2,
-      product_id: 4,
+      user_id: userIds[1], // John Doe
+      product_id: 8, // SBI Bluechip Fund
       quantity: 100.0,
       average_price: 125.45
     },
     {
-      user_id: 3,
-      product_id: 5,
+      user_id: userIds[2], // Jane Smith
+      product_id: 9, // Axis Long Term Equity
       quantity: 50.0,
       average_price: 89.75
     }
@@ -273,13 +337,17 @@ const seedPortfolio = async () => {
 const seedWatchlist = async () => {
   console.log('👀 Seeding watchlist...');
 
+  // Get actual user IDs from database
+  const usersResult = await pool.query('SELECT id FROM users ORDER BY id');
+  const userIds = usersResult.rows.map(row => row.id);
+
   const watchlistData = [
-    { user_id: 1, product_id: 3 },
-    { user_id: 1, product_id: 6 },
-    { user_id: 2, product_id: 1 },
-    { user_id: 2, product_id: 2 },
-    { user_id: 3, product_id: 4 },
-    { user_id: 3, product_id: 5 }
+    { user_id: userIds[0], product_id: 7 }, // Admin watching HDFC Bank
+    { user_id: userIds[0], product_id: 10 }, // Admin watching Infosys
+    { user_id: userIds[1], product_id: 5 }, // John watching Reliance
+    { user_id: userIds[1], product_id: 6 }, // John watching TCS
+    { user_id: userIds[2], product_id: 8 }, // Jane watching SBI Bluechip
+    { user_id: userIds[2], product_id: 9 }  // Jane watching Axis Fund
   ];
 
   for (const item of watchlistData) {
@@ -296,37 +364,41 @@ const seedWatchlist = async () => {
 const seedNotifications = async () => {
   console.log('🔔 Seeding notifications...');
 
+  // Get actual user IDs from database
+  const usersResult = await pool.query('SELECT id FROM users ORDER BY id');
+  const userIds = usersResult.rows.map(row => row.id);
+
   const notifications = [
     {
-      user_id: 1,
+      user_id: userIds[0], // Admin user
       type: 'order',
       title: 'Order Executed',
       message: 'Your buy order for Reliance Industries Ltd has been executed successfully.',
       data: JSON.stringify({ order_id: 1, product_name: 'Reliance Industries Ltd' })
     },
     {
-      user_id: 1,
+      user_id: userIds[0], // Admin user
       type: 'alert',
       title: 'Price Alert Triggered',
       message: 'TCS has reached your target price of ₹3800.00',
       data: JSON.stringify({ alert_id: 1, product_name: 'TCS', target_price: 3800 })
     },
     {
-      user_id: 2,
+      user_id: userIds[1], // John Doe
       type: 'system',
       title: 'Welcome to TradingApp',
       message: 'Welcome to our trading platform! Start exploring our products.',
       data: JSON.stringify({ welcome: true })
     },
     {
-      user_id: 2,
+      user_id: userIds[1], // John Doe
       type: 'transaction',
       title: 'Transaction Successful',
       message: 'Your purchase of HDFC Bank Ltd shares has been completed.',
       data: JSON.stringify({ transaction_id: 1, product_name: 'HDFC Bank Ltd' })
     },
     {
-      user_id: 3,
+      user_id: userIds[2], // Jane Smith
       type: 'order',
       title: 'Order Pending',
       message: 'Your sell order for SBI Bluechip Fund is pending execution.',
@@ -354,20 +426,24 @@ const seedNotifications = async () => {
 const seedKYC = async () => {
   console.log('📋 Seeding KYC...');
 
+  // Get actual user IDs from database
+  const usersResult = await pool.query('SELECT id, name, email FROM users WHERE role = "user" ORDER BY id');
+  const userIds = usersResult.rows;
+
   const kycData = [
     {
-      user_id: 2,
-      name: 'John Doe',
-      email: 'john@example.com',
+      user_id: userIds[0].id, // John Doe
+      name: userIds[0].name,
+      email: userIds[0].email,
       pan_number: 'ABCDE1234F',
       address: '123 Main Street, Mumbai, Maharashtra 400001',
       phone: '9876543210',
       status: 'approved'
     },
     {
-      user_id: 3,
-      name: 'Jane Smith',
-      email: 'jane@example.com',
+      user_id: userIds[1].id, // Jane Smith
+      name: userIds[1].name,
+      email: userIds[1].email,
       pan_number: 'FGHIJ5678K',
       address: '456 Park Avenue, Delhi, Delhi 110001',
       phone: '9876543211',
@@ -397,45 +473,49 @@ const seedKYC = async () => {
 const seedAuditLogs = async () => {
   console.log('📊 Seeding audit logs...');
 
+  // Get actual user IDs from database
+  const usersResult = await pool.query('SELECT id FROM users ORDER BY id');
+  const userIds = usersResult.rows.map(row => row.id);
+
   const auditLogs = [
     {
-      user_id: 1,
+      user_id: userIds[0], // Admin user
       action: 'LOGIN',
       resource: 'user',
-      resource_id: 1,
+      resource_id: userIds[0],
       details: JSON.stringify({ ip_address: '127.0.0.1', user_agent: 'Mozilla/5.0' }),
       ip_address: '127.0.0.1',
       user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
     },
     {
-      user_id: 1,
+      user_id: userIds[0], // Admin user
       action: 'CREATE_ORDER',
       resource: 'order',
       resource_id: 1,
-      details: JSON.stringify({ product_id: 1, quantity: 5, order_type: 'buy' }),
+      details: JSON.stringify({ product_id: 5, quantity: 5, order_type: 'buy' }),
       ip_address: '127.0.0.1',
       user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
     },
     {
-      user_id: 2,
+      user_id: userIds[1], // John Doe
       action: 'LOGIN',
       resource: 'user',
-      resource_id: 2,
+      resource_id: userIds[1],
       details: JSON.stringify({ ip_address: '192.168.1.100', user_agent: 'Mozilla/5.0' }),
       ip_address: '192.168.1.100',
       user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
     },
     {
-      user_id: 2,
+      user_id: userIds[1], // John Doe
       action: 'BUY_PRODUCT',
       resource: 'transaction',
       resource_id: 1,
-      details: JSON.stringify({ product_id: 3, units: 10, total_amount: 16505.00 }),
+      details: JSON.stringify({ product_id: 7, units: 10, total_amount: 16505.00 }),
       ip_address: '192.168.1.100',
       user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
     },
     {
-      user_id: 3,
+      user_id: userIds[2], // Jane Smith
       action: 'SUBMIT_KYC',
       resource: 'kyc',
       resource_id: 1,
